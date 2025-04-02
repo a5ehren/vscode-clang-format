@@ -3,7 +3,7 @@
   "displayName": "Clang-Format",
   "description": "Use Clang-Format in Visual Studio Code",
   "version": "1.9.1",
-  "publisher": "xaver",
+  "publisher": "ebendler",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -26,7 +26,6 @@
     "Protobuf",
     "CUDA"
   ],
-  "main": "./out/src/extension",
   "activationEvents": [
     "onLanguage:cpp",
     "onLanguage:c",
@@ -45,6 +44,7 @@
     "onLanguage:cuda",
     "onLanguage:cuda-cpp"
   ],
+  "main": "./dist/extension.js",
   "contributes": {
     "configuration": {
       "type": "object",
@@ -314,22 +314,37 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "tsc -p ./",
-    "compile": "tsc -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install"
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/node": "^22.13.17",
-    "@types/sax": "^1.2.7",
     "@types/vscode": "^1.96.0",
-    "@vscode/test-electron": "^2.4.1",
-    "@vscode/vsce": "^3.3.2",
-    "typescript": "^5.8.2"
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/sax": "^1.2.7",
+    "@typescript-eslint/eslint-plugin": "^8.28.0",
+    "@typescript-eslint/parser": "^8.28.0",
+    "eslint": "^9.23.0",
+    "esbuild": "^0.25.1",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.8.2",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1"
   },
   "icon": "clang-format.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/xaverh/vscode-clang-format-provider"
+    "url": "https://github.com/a5ehren/vscode-clang-format"
   },
   "license": "MIT"
 }
