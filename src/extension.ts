@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import cp = require('child_process');
 import path = require('path');
-import {MODES,
-        ALIAS} from './clangMode';
+import { MODES } from './clangMode';
+import { ALIAS } from './shared/languageConfig';
 import sax = require('sax');
 import { sync as whichSync } from 'which';
 import { statSync } from 'fs';
