@@ -93,13 +93,6 @@ jobs:
         run: xvfb-run -a npm test
         if: runner.os == 'Linux'
 
-      - name: Upload Coverage Report
-        uses: coverallsapp/github-action@v2.3.6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          parallel: true
-          flag-name: Test on ${{ matrix.os }}
-
       - name: Package Extension
         id: packageExtension
         uses: HaaLeo/publish-vscode-extension@v2
@@ -114,23 +107,10 @@ jobs:
           path: ${{ steps.packageExtension.outputs.vsixPath }}
           retention-days: 5  # Limit artifact retention
 
-  coverage:
-    name: Code Coverage
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: build-lint-test
-    steps:
-      - name: Let Coveralls know that all tests have finished
-        uses: coverallsapp/github-action@v2.3.6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          parallel-finished: true
-
   publish:
     name: Publish Github Action
     needs:
       - build-lint-test
-      - coverage
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     timeout-minutes: 10
