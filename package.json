@@ -12,7 +12,9 @@
     "theme": "dark"
   },
   "dependencies": {
-    "sax": "^1.4.1"
+    "@types/which": "^3.0.4",
+    "sax": "^1.4.1",
+    "which": "^5.0.0"
   },
   "categories": [
     "Formatters"
@@ -400,7 +402,7 @@
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
-    "@types/node": "20.x",
+    "@types/node": "^20.x",
     "@types/sax": "^1.2.7",
     "@types/vscode": "^1.96.0",
     "@typescript-eslint/eslint-plugin": "^8.28.0",

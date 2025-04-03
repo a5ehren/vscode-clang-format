@@ -3,8 +3,9 @@ import cp = require('child_process');
 import path = require('path');
 import {MODES,
         ALIAS} from './clangMode';
-import {getBinPath} from './clangPath';
 import sax = require('sax');
+import { sync as whichSync } from 'which';
+import { statSync } from 'fs';
 
 interface ClangFormatConfig {
   executable: string;
@@ -19,6 +20,8 @@ interface EditInfo {
   text: string;
 }
 
+// Cache binary paths for performance
+const binPathCache: { [key: string]: string } = {};
 export const outputChannel = vscode.window.createOutputChannel('Clang-Format');
 let diagnosticCollection: vscode.DiagnosticCollection;
 
@@ -30,6 +33,38 @@ function getPlatformString() {
   }
 
   return 'unknown';
+}
+
+/**
+ * Get the path to a binary by searching PATH and caching the result
+ * @param binname The name of the binary to find
+ * @returns The full path to the binary
+ */
+function getBinPath(binname: string): string {
+  // Return cached path if it exists
+  if (binPathCache[binname]) {
+    try {
+      // Verify the cached binary still exists
+      if (statSync(binPathCache[binname]).isFile()) {
+        return binPathCache[binname];
+      }
+    } catch (error) {
+      // Cache is invalid, remove it
+      delete binPathCache[binname];
+    }
+  }
+
+  try {
+    // Try to find the binary using which
+    const binPath = whichSync(binname);
+    binPathCache[binname] = binPath;
+    return binPath;
+  } catch (error) {
+    // If which fails, return the binary name as-is
+    // This maintains compatibility with the old behavior
+    binPathCache[binname] = binname;
+    return binname;
+  }
 }
 
 export class ClangDocumentFormattingEditProvider implements vscode.DocumentFormattingEditProvider, vscode.DocumentRangeFormattingEditProvider {
@@ -297,11 +332,31 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
   }
 
   private getFormatArgs(document: vscode.TextDocument, range: vscode.Range | undefined, options: vscode.FormattingOptions | null): string[] {
+    // Validate and sanitize style parameters
+    let style = this.getStyle(document);
+    let fallbackStyle = this.getFallbackStyle(document);
+    const assumedFilename = this.getAssumedFilename(document);
+
+    // Validate style parameter - only allow known values or file paths
+    const validStyles = ['llvm', 'google', 'chromium', 'mozilla', 'webkit', 'microsoft', 'gnu', 'file'];
+    const normalizedStyle = style.toLowerCase();
+    if (!validStyles.includes(normalizedStyle) && !normalizedStyle.startsWith('{') && !normalizedStyle.endsWith('}')) {
+      outputChannel.appendLine(`Warning: Invalid style value "${style}", falling back to "file"`);
+      style = 'file';
+    }
+
+    // Validate fallback style - only allow known values
+    const validFallbackStyles = ['none', 'llvm', 'google', 'chromium', 'mozilla', 'webkit', 'microsoft', 'gnu'];
+    if (!validFallbackStyles.includes(fallbackStyle.toLowerCase())) {
+      outputChannel.appendLine(`Warning: Invalid fallback style "${fallbackStyle}", falling back to "none"`);
+      fallbackStyle = 'none';
+    }
+
     const baseArgs = [
       '-output-replacements-xml',
-      `-style=${this.getStyle(document)}`,
-      `-fallback-style=${this.getFallbackStyle(document)}`,
-      `-assume-filename=${this.getAssumedFilename(document)}`
+      `-style=${style}`,
+      `-fallback-style=${fallbackStyle}`,
+      `-assume-filename=${assumedFilename}`
     ];
 
     if (!range) {
@@ -371,11 +426,16 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
           workingPath = path.dirname(document.fileName);
         }
 
+        // On Windows, we need shell:true due to Node.js security changes
+        // On other platforms, we keep shell:false for better security
+        const useShell = process.platform === 'win32';
+        
         // Start the formatting process
         child = cp.spawn(formatCommandBinPath, formatArgs, {
           cwd: workingPath,
           windowsHide: true,
-          shell: true
+          shell: useShell,
+          stdio: ['pipe', 'pipe', 'pipe']
         });
 
         let stdout = '';
