@@ -1,8 +1,5 @@
 out
+dist
 node_modules
+.vscode-test/
 *.vsix
-typings/main
-typings/browser
-typings/main.d.ts
-typings/browser.d.ts
-npm-debug.log

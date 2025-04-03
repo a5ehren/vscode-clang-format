@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.9.1] - 2025-04-02
+### Fixed
+- Rebuilt extension with modern best practices
+
 ## [1.9.0] - 2019-01-22
 ### Fixed
 - Fixed buffer overflow error while formatting huge files (by [VPeruS](https://github.com/VPeruS))
