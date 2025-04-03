@@ -2,16 +2,32 @@
 
 import * as vscode from 'vscode';
 
-export const ALIAS = {
+export const ALIAS: { [key: string]: string } = {
   'proto3': 'proto'
 };
 
 let languages: string[] = [];
-for (let l of ['cpp', 'c', 'csharp', 'objective-c', 'objective-cpp', 'java', 'javascript', 'json', 'typescript', 'proto', 'proto3', 'textproto', 'apex', 'glsl', 'hlsl', 'cuda', 'cuda-cpp']) {
-  let confKey = `language.${ALIAS[l] || l}.enable`;
-  if (vscode.workspace.getConfiguration('clang-format').get(confKey)) {
-    languages.push(l);
+let MODES: vscode.DocumentFilter[] = [];
+
+function updateLanguages() {
+  languages = [];
+  for (let l of ['cpp', 'c', 'csharp', 'objective-c', 'objective-cpp', 'java', 'javascript', 'json', 'typescript', 'proto', 'proto3', 'textproto', 'apex', 'glsl', 'hlsl', 'cuda', 'cuda-cpp']) {
+    let confKey = `language.${ALIAS[l] || l}.enable`;
+    if (vscode.workspace.getConfiguration('clang-format').get(confKey)) {
+      languages.push(l);
+    }
   }
+  MODES = languages.map((language) => ({ language, scheme: 'file' }));
 }
 
-export const MODES: vscode.DocumentFilter[] = languages.map((language) => ({language, scheme: 'file'}));
+// Initial update
+updateLanguages();
+
+// Listen for configuration changes
+vscode.workspace.onDidChangeConfiguration((event) => {
+  if (event.affectsConfiguration('clang-format')) {
+    updateLanguages();
+  }
+});
+
+export { MODES };
