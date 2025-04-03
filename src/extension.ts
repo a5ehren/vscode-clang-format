@@ -204,14 +204,36 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
   private getStyle(document: vscode.TextDocument) {
     // Get language-specific style with document URI
     let config = vscode.workspace.getConfiguration('clang-format', document.uri);
-    let ret = config.get<string>(`language.${this.getLanguage(document)}.style`);
-    if (ret?.trim()) {
+    let ret = config.get<string>(`language.${this.getLanguage(document)}.style`) ?? '';
+    ret = ret.replace(/\${workspaceRoot}/g, this.getWorkspaceFolder(document) ?? '')
+      .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder(document) ?? '')
+      .replace(/\${cwd}/g, process.cwd())
+      .replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
+        // Only allow alphanumeric and underscore characters in env var names
+        if (!/^[a-zA-Z0-9_]+$/.test(envName)) {
+          outputChannel.appendLine(`Warning: Invalid environment variable name: ${envName}`);
+          return '';
+        }
+        return process.env[envName] ?? '';
+      });
+    if (ret.trim()) {
       return ret;
     }
 
     // Fallback to global style
-    ret = config.get<string>('style');
-    return ret?.trim() ? ret : this.defaultConfigure.style;
+    ret = config.get<string>('style') ?? '';
+    ret = ret.replace(/\${workspaceRoot}/g, this.getWorkspaceFolder(document) ?? '')
+      .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder(document) ?? '')
+      .replace(/\${cwd}/g, process.cwd())
+      .replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
+        // Only allow alphanumeric and underscore characters in env var names
+        if (!/^[a-zA-Z0-9_]+$/.test(envName)) {
+          outputChannel.appendLine(`Warning: Invalid environment variable name: ${envName}`);
+          return '';
+        }
+        return process.env[envName] ?? '';
+      });
+    return ret.trim() ? ret : this.defaultConfigure.style;
   }
 
   private getFallbackStyle(document: vscode.TextDocument) {
@@ -328,7 +350,8 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
         // Start the formatting process
         child = cp.spawn(formatCommandBinPath, formatArgs, {
           cwd: workingPath,
-          windowsHide: true
+          windowsHide: true,
+          shell: true
         });
 
         let stdout = '';

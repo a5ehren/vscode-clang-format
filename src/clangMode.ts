@@ -11,7 +11,7 @@ let MODES: vscode.DocumentFilter[] = [];
 
 function updateLanguages() {
   languages = [];
-  for (let l of ['cpp', 'c', 'csharp', 'objective-c', 'objective-cpp', 'java', 'javascript', 'json', 'typescript', 'proto', 'proto3', 'textproto', 'apex', 'glsl', 'hlsl', 'cuda', 'cuda-cpp']) {
+  for (let l of ['cpp', 'c', 'csharp', 'objective-c', 'objective-cpp', 'java', 'javascript', 'json', 'typescript', 'proto', 'proto3', 'textproto', 'apex', 'glsl', 'hlsl', 'cuda', 'cuda-cpp', 'tablegen', 'metal']) {
     let confKey = `language.${ALIAS[l] || l}.enable`;
     if (vscode.workspace.getConfiguration('clang-format').get(confKey)) {
       languages.push(l);

@@ -2,7 +2,7 @@
   "name": "clang-format",
   "displayName": "Clang-Format",
   "description": "Use Clang-Format in Visual Studio Code",
-  "version": "1.9.1",
+  "version": "2025.04.03",
   "publisher": "ebendler",
   "engines": {
     "vscode": "^1.96.0"
@@ -24,7 +24,9 @@
     "Clang",
     "LLVM",
     "Protobuf",
-    "CUDA"
+    "CUDA",
+    "TableGen",
+    "Metal"
   ],
   "activationEvents": [
     "onLanguage:cpp",
@@ -42,7 +44,9 @@
     "onLanguage:glsl",
     "onLanguage:hlsl",
     "onLanguage:cuda",
-    "onLanguage:cuda-cpp"
+    "onLanguage:cuda-cpp",
+    "onLanguage:tablegen",
+    "onLanguage:metal"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -340,6 +344,36 @@
           "default": "",
           "description": "clang-format fallback style for CUDA C++, left empty to use clang-format.fallbackStyle",
           "scope": "resource"
+        },
+        "clang-format.language.tablegen.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "enable formatting for TableGen (requires reloading Visual Studio Code)"
+        },
+        "clang-format.language.teblegen.style": {
+          "type": "string",
+          "default": "",
+          "description": "clang-format fallback style for TableGen, left empty to use clang-format.style"
+        },
+        "clang-format.language.teblegen.fallbackStyle": {
+          "type": "string",
+          "default": "",
+          "description": "clang-format fallback style for TableGen, left empty to use clang-format.fallbackStyle"
+        },
+        "clang-format.language.metal.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "enable formatting for Metal Shader Files"
+        },
+        "clang-format.language.metal.style": {
+          "type": "string",
+          "default": "",
+          "description": "clang-format fallback style for Metal Shader Files, left empty to use clang-format.style"
+        },
+        "clang-format.language.metal.fallbackStyle": {
+          "type": "string",
+          "default": "",
+          "description": "clang-format fallback style for Metal Shader Files, left empty to use clang-format.fallbackStyle"
         },
         "clang-format.assumeFilename": {
           "type": "string",
