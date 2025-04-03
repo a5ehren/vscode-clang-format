@@ -1,6 +1,6 @@
 {
   "name": "clang-format",
-  "displayName": "Clang-Format",
+  "displayName": "Clang-Format 2025",
   "description": "Use Clang-Format in Visual Studio Code",
   "version": "2.0.0",
   "publisher": "ebendler",
@@ -28,7 +28,9 @@
     "Protobuf",
     "CUDA",
     "TableGen",
-    "Metal"
+    "Metal",
+    "Verilog",
+    "SystemVerilog"
   ],
   "activationEvents": [
     "onLanguage:cpp",
@@ -38,6 +40,7 @@
     "onLanguage:objective-cpp",
     "onLanguage:java",
     "onLanguage:javascript",
+    "onLanguage:json",
     "onLanguage:typescript",
     "onLanguage:proto",
     "onLanguage:proto3",
@@ -48,7 +51,9 @@
     "onLanguage:cuda",
     "onLanguage:cuda-cpp",
     "onLanguage:tablegen",
-    "onLanguage:metal"
+    "onLanguage:metal",
+    "onLanguage:verilog",
+    "onLanguage:systemverilog"
   ],
   "main": "./dist/extension.js",
   "contributes": {
