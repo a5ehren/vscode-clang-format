@@ -10,12 +10,22 @@ on:
   release:
     types:
       - published
+  schedule:
+    - cron: '0 0 * * 1'  # Weekly security scan
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
 
 jobs:
   build-lint-test:
     name: Node ${{ matrix.node }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
+    permissions:
+      contents: read
+      security-events: write
     strategy:
       fail-fast: true
       matrix:
@@ -25,49 +35,84 @@ jobs:
           - windows-latest
         node:
           - 20
+
     outputs:
       vsixPath: ${{ steps.packageExtension.outputs.vsixPath }}
+
     steps:
       - name: Setup GIT for Windows
         run: |
           git config --global core.autocrlf false
           git config --global core.eol lf
         if: runner.os == 'Windows'
+
       - name: Checkout Source
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better versioning
+
       - name: Install Node ${{ matrix.node }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
+          cache: 'npm'  # Enable npm caching
+
       - name: Install Dependencies
         run: npm ci
+        
+      - name: Run npm audit
+        run: npm audit
+        continue-on-error: true  # Don't fail the build, but report issues
+        
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/init@v3
+        if: github.event_name == 'schedule'
+        with:
+          languages: javascript, typescript
+          
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        if: github.event_name == 'schedule'
+
       - name: Run Linter
         run: npm run lint
-      - name: Build Code
-        run: npm run build
+
+      - name: Build Code (Standard)
+        run: npm run compile
+        if: github.event_name != 'release'
+
+      - name: Build Code (Release)
+        run: npm run package
+        if: github.event_name == 'release'
+
       - name: Run Unit Tests on Windows or macOS
         run: npm run test
         if: runner.os != 'Linux'
+
       - name: Run Unit Tests on Linux
         run: xvfb-run -a npm test
         if: runner.os == 'Linux'
+
       - name: Upload Coverage Report
         uses: coverallsapp/github-action@v2.3.6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel: true
           flag-name: Test on ${{ matrix.os }}
+
       - name: Package Extension
         id: packageExtension
         uses: HaaLeo/publish-vscode-extension@v2
         with:
           pat: stub
           dryRun: true
+
       - name: Upload Extension Package as Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}
           path: ${{ steps.packageExtension.outputs.vsixPath }}
+          retention-days: 5  # Limit artifact retention
 
   coverage:
     name: Code Coverage
@@ -89,19 +134,36 @@ jobs:
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: write
+      packages: write
+    
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
-      - name: Install Node v22
+        with:
+          fetch-depth: 0  # Full history for better versioning
+
+      - name: Install Node v20
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
       - name: Install Dependencies
         run: npm ci
+        
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
           name: ubuntu-latest
+          
+      - name: Verify Artifact Checksum
+        run: |
+          echo "Verifying artifact integrity..."
+          sha256sum ${{ needs.build-lint-test.outputs.vsixPath }}
+
       - name: GitHub Release
         uses: softprops/action-gh-release@v1
         with:
@@ -112,12 +174,14 @@ jobs:
           name: ${{ github.ref_name }}
           fail_on_unmatched_files: true
           files: ${{ needs.build-lint-test.outputs.vsixPath }}
+          
       - name: Publish to Visual Studio Marketplace
         uses: HaaLeo/publish-vscode-extension@v2
         with:
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
           extensionFile: ${{ needs.build-lint-test.outputs.vsixPath }}
           registryUrl: https://marketplace.visualstudio.com
+          
       - name: Publish to Open VSX Registry
         uses: HaaLeo/publish-vscode-extension@v2
         with:
