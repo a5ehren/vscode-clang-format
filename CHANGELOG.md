@@ -3,10 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2025.04.03] - 2025-04-03
+## [2.0.0] - 2025-04-03
 ### Fixed
 - Rebuilt extension with modern best practices
-- Changed versioning to a date scheme
 - Add tablegen
 - Add Metal
 - Support placeholders in style options
