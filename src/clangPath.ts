@@ -1,18 +1,20 @@
 'use strict';
 
-import fs = require('fs');
-import path = require('path');
+import { statSync } from 'fs';
+import { delimiter, join } from 'path';
 
-interface CacheEntry {
-  path: string;
-  timestamp: number;
+export interface CacheEntry {
+  readonly path: string;
+  readonly timestamp: number;
 }
 
-let binPathCache: { [bin: string]: CacheEntry } = {};
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes in milliseconds
+type BinPathCache = Record<string, CacheEntry>;
 
-function isValidCacheEntry(entry: CacheEntry): boolean {
-  if (!entry || !entry.path) {
+const CACHE_TTL: number = 5 * 60 * 1000; // 5 minutes in milliseconds
+let binPathCache: BinPathCache = {};
+
+function isValidCacheEntry(entry: CacheEntry | undefined): boolean {
+  if (!entry?.path) {
     return false;
   }
   
@@ -23,8 +25,9 @@ function isValidCacheEntry(entry: CacheEntry): boolean {
   
   // Verify the file still exists and is accessible
   try {
-    return fs.statSync(entry.path).isFile();
-  } catch {
+    return statSync(entry.path).isFile();
+  } catch (error) {
+    console.debug(`File access error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     return false;
   }
 }
@@ -43,35 +46,33 @@ export function getBinPath(binname: string): string {
   for (const binNameToSearch of correctBinname(binname)) {
     // clang-format.executable has a valid absolute path
     try {
-      if (fs.statSync(binNameToSearch).isFile()) {
+      if (statSync(binNameToSearch).isFile()) {
         binPathCache[binname] = {
           path: binNameToSearch,
           timestamp: Date.now()
         };
         return binNameToSearch;
       }
-    } catch {
-      // File doesn't exist or isn't accessible
+    } catch (error) {
+      console.debug(`File check error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 
-    const envPath = process.env['PATH'];
-    if (typeof envPath === 'string' && envPath.trim().length > 0) {
-      const pathparts = envPath.split(path.delimiter).filter((part) => {
-        return part.length > 0;
-      });
+    const envPath = process.env['PATH'] ?? '';
+    if (envPath.trim().length > 0) {
+      const pathparts = envPath.split(delimiter).filter(Boolean);
       
-      for (let i = 0; i < pathparts.length; i++) {
-        const binpath = path.join(pathparts[i], binNameToSearch);
+      for (const pathPart of pathparts) {
+        const binpath = join(pathPart, binNameToSearch);
         try {
-          if (fs.statSync(binpath).isFile()) {
+          if (statSync(binpath).isFile()) {
             binPathCache[binname] = {
               path: binpath,
               timestamp: Date.now()
             };
             return binpath;
           }
-        } catch {
-          // File doesn't exist or isn't accessible
+        } catch (error) {
+          console.debug(`Path search error: ${error instanceof Error ? error.message : 'Unknown error'}`);
           continue;
         }
       }
@@ -86,10 +87,9 @@ export function getBinPath(binname: string): string {
   return binname;
 }
 
-function correctBinname(binname: string): string[] {
+function correctBinname(binname: string): readonly string[] {
   if (process.platform === 'win32') {
-    return [binname + '.exe', binname + '.bat', binname + '.cmd', binname];
-  } else {
-    return [binname];
+    return [binname + '.exe', binname + '.bat', binname + '.cmd', binname] as const;
   }
+  return [binname] as const;
 }
