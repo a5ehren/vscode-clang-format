@@ -24,7 +24,7 @@ jobs:
           - macos-latest
           - windows-latest
         node:
-          - 22
+          - 20
     outputs:
       vsixPath: ${{ steps.packageExtension.outputs.vsixPath }}
     steps:
@@ -95,7 +95,7 @@ jobs:
       - name: Install Node v22
         uses: actions/setup-node@v1
         with:
-          node-version: 22
+          node-version: 20
       - name: Install Dependencies
         run: npm ci
       - name: Download Build Artifact
