@@ -3,9 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.9.1] - 2025-04-02
+## [2.0.0] - 2025-04-03
 ### Fixed
 - Rebuilt extension with modern best practices
+- Add tablegen
+- Add Metal
+- Support placeholders in style options
+- Use shell:true parameter to conform with an upstream security fix
 
 ## [1.9.0] - 2019-01-22
 ### Fixed

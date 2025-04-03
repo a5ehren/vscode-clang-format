@@ -2,29 +2,47 @@
 
 import * as vscode from 'vscode';
 
-export const ALIAS: { [key: string]: string } = {
+export const ALIAS: Readonly<Record<string, string>> = {
   'proto3': 'proto'
-};
+} as const;
 
-let languages: string[] = [];
-let MODES: vscode.DocumentFilter[] = [];
+type SupportedLanguage = 
+  | 'cpp' | 'c' | 'csharp' | 'objective-c' | 'objective-cpp' 
+  | 'java' | 'javascript' | 'json' | 'typescript' 
+  | 'proto' | 'proto3' | 'textproto' | 'apex' 
+  | 'glsl' | 'hlsl' | 'cuda' | 'cuda-cpp' 
+  | 'tablegen' | 'metal';
 
-function updateLanguages() {
+const SUPPORTED_LANGUAGES: readonly SupportedLanguage[] = [
+  'cpp', 'c', 'csharp', 'objective-c', 'objective-cpp',
+  'java', 'javascript', 'json', 'typescript',
+  'proto', 'proto3', 'textproto', 'apex',
+  'glsl', 'hlsl', 'cuda', 'cuda-cpp',
+  'tablegen', 'metal'
+] as const;
+
+let languages: SupportedLanguage[] = [];
+let MODES: readonly vscode.DocumentFilter[] = [];
+
+function updateLanguages(): void {
   languages = [];
-  for (let l of ['cpp', 'c', 'csharp', 'objective-c', 'objective-cpp', 'java', 'javascript', 'json', 'typescript', 'proto', 'proto3', 'textproto', 'apex', 'glsl', 'hlsl', 'cuda', 'cuda-cpp']) {
-    let confKey = `language.${ALIAS[l] || l}.enable`;
-    if (vscode.workspace.getConfiguration('clang-format').get(confKey)) {
-      languages.push(l);
+  for (const lang of SUPPORTED_LANGUAGES) {
+    const confKey = `language.${ALIAS[lang] || lang}.enable`;
+    if (vscode.workspace.getConfiguration('clang-format').get<boolean>(confKey)) {
+      languages.push(lang);
     }
   }
-  MODES = languages.map((language) => ({ language, scheme: 'file' }));
+  MODES = Object.freeze(languages.map((language) => ({ 
+    language, 
+    scheme: 'file' as const
+  })));
 }
 
 // Initial update
 updateLanguages();
 
 // Listen for configuration changes
-vscode.workspace.onDidChangeConfiguration((event) => {
+vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent): void => {
   if (event.affectsConfiguration('clang-format')) {
     updateLanguages();
   }
