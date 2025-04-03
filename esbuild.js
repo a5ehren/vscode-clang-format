@@ -1,4 +1,8 @@
-const esbuild = require("esbuild");
+const esbuild = require('esbuild');
+const { execSync } = require('child_process');
+
+// Run the config generation first
+execSync('npm run generate-config', { stdio: 'inherit' });
 
 const production = process.argv.includes('--production');
 const watch = process.argv.includes('--watch');

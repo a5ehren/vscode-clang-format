@@ -1,25 +1,16 @@
 'use strict';
 
 import * as vscode from 'vscode';
+import {
+  SupportedLanguage,
+  SUPPORTED_LANGUAGES,
+  ALIAS
+} from './shared/languageConfig';
 
-export const ALIAS: Readonly<Record<string, string>> = {
-  'proto3': 'proto'
-} as const;
-
-type SupportedLanguage = 
-  | 'cpp' | 'c' | 'csharp' | 'objective-c' | 'objective-cpp' 
-  | 'java' | 'javascript' | 'json' | 'typescript' 
-  | 'proto' | 'proto3' | 'textproto' | 'apex' 
-  | 'glsl' | 'hlsl' | 'cuda' | 'cuda-cpp' 
-  | 'tablegen' | 'metal';
-
-const SUPPORTED_LANGUAGES: readonly SupportedLanguage[] = [
-  'cpp', 'c', 'csharp', 'objective-c', 'objective-cpp',
-  'java', 'javascript', 'json', 'typescript',
-  'proto', 'proto3', 'textproto', 'apex',
-  'glsl', 'hlsl', 'cuda', 'cuda-cpp',
-  'tablegen', 'metal'
-] as const;
+export type StyleOverride = {
+  fallbackStyle?: string;
+  description?: string;
+};
 
 let languages: SupportedLanguage[] = [];
 let MODES: readonly vscode.DocumentFilter[] = [];
