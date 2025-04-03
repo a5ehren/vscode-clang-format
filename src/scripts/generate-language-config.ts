@@ -40,6 +40,10 @@ function generateLanguageConfig(lang: SupportedLanguage): Record<string, any> {
   };
 }
 
+function generateActivationEvents(): string[] {
+  return SUPPORTED_LANGUAGES.map(lang => `onLanguage:${lang}`);
+}
+
 function main() {
   // Read the existing package.json
   const packageJsonPath = path.join(__dirname, '..', '..', 'package.json');
@@ -49,6 +53,9 @@ function main() {
   const languageConfigs = SUPPORTED_LANGUAGES.reduce((acc, lang) => {
     return { ...acc, ...generateLanguageConfig(lang) };
   }, {});
+
+  // Generate activation events
+  packageJson.activationEvents = generateActivationEvents();
 
   // Merge with existing configuration properties
   packageJson.contributes.configuration.properties = {
