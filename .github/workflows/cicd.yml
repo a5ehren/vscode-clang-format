@@ -165,7 +165,7 @@ jobs:
           sha256sum ${{ needs.build-lint-test.outputs.vsixPath }}
 
       - name: GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
           body: |
