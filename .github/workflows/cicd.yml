@@ -36,7 +36,7 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v4
       - name: Install Node ${{ matrix.node }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
       - name: Install Dependencies
@@ -93,7 +93,7 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v4
       - name: Install Node v22
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: 20
       - name: Install Dependencies
