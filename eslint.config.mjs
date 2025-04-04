@@ -1,6 +1,7 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import prettierConfig from 'eslint-config-prettier';
+import tsParser from '@typescript-eslint/parser';
 
 export default tseslint.config(
   eslint.configs.recommended,
@@ -9,6 +10,10 @@ export default tseslint.config(
   {
     languageOptions: {
       parserOptions: {
+        parser: tsParser,
+        ecmaVersion: 'latest',
+        sourceType: 'commonjs',
+        project: './tsconfig.json',
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
