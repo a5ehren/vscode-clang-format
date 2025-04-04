@@ -75,7 +75,7 @@ jobs:
         if: github.event_name == 'schedule'
 
       - name: Run Linter
-        run: npm run lint
+        run: npm run eslint
 
       - name: Build Code (Standard)
         run: npm run compile
