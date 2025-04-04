@@ -4,13 +4,8 @@ import * as vscode from 'vscode';
 import {
   SupportedLanguage,
   SUPPORTED_LANGUAGES,
-  ALIAS
+  ALIAS,
 } from './shared/languageConfig';
-
-export type StyleOverride = {
-  fallbackStyle?: string;
-  description?: string;
-};
 
 let languages: SupportedLanguage[] = [];
 let MODES: readonly vscode.DocumentFilter[] = [];

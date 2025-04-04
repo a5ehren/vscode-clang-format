@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
-import cp = require('child_process');
-import path = require('path');
+import * as cp from 'child_process';
+import * as path from 'path';
 import { MODES } from './clangMode';
 import { ALIAS } from './shared/languageConfig';
-import sax = require('sax');
+import * as sax from 'sax';
 import { sync as whichSync } from 'which';
 import { statSync } from 'fs';
 
@@ -21,7 +21,7 @@ interface EditInfo {
 }
 
 // Cache binary paths for performance
-const binPathCache: { [key: string]: string } = {};
+const binPathCache: Record<string, string | undefined> = {};
 export const outputChannel = vscode.window.createOutputChannel('Clang-Format');
 let diagnosticCollection: vscode.DiagnosticCollection;
 
@@ -48,9 +48,9 @@ function getBinPath(binname: string): string {
       if (statSync(binPathCache[binname]).isFile()) {
         return binPathCache[binname];
       }
-    } catch (error) {
+    } catch (_) {
       // Cache is invalid, remove it
-      delete binPathCache[binname];
+      binPathCache[binname] = undefined;
     }
   }
 
@@ -59,7 +59,7 @@ function getBinPath(binname: string): string {
     const binPath = whichSync(binname);
     binPathCache[binname] = binPath;
     return binPath;
-  } catch (error) {
+  } catch (_) {
     // If which fails, return the binary name as-is
     // This maintains compatibility with the old behavior
     binPathCache[binname] = binname;
@@ -120,7 +120,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
         editInfo.offset = charPos;
         
         // Calculate the length in characters
-        let byteEnd = bytePos + editInfo.length;
+        const byteEnd = bytePos + editInfo.length;
         let charEnd = charPos;
         while (bytePos < byteEnd && charEnd < content.length) {
           bytePos += getUtf8Length(content, charEnd, 1);
@@ -149,8 +149,8 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
             return;
 
           case 'replacement': {
-            const length = tag.attributes['length'];
-            const offset = tag.attributes['offset'];
+            const length = tag.attributes.length;
+            const offset = tag.attributes.offset;
             
             if (!length || !offset) {
               handleError(new Error('Malformed XML: missing required attributes'));
@@ -158,8 +158,8 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
             }
 
             currentEdit = {
-              length: parseInt(length.toString()),
-              offset: parseInt(offset.toString()),
+              length: parseInt(String(length)),
+              offset: parseInt(String(offset)),
               text: ''
             };
             byteToOffset(currentEdit);
@@ -176,7 +176,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
         currentEdit.text = text;
       };
 
-      parser.onclosetag = (tagName) => {
+      parser.onclosetag = (_) => {
         if (!currentEdit) { return; }
 
         try {
@@ -221,12 +221,12 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
   /// Get execute name in clang-format.executable, if not found, use default value
   /// If configure has changed, it will get the new value
   private getExecutablePath(document?: vscode.TextDocument) {
-    let platform = getPlatformString();
-    let config = vscode.workspace.getConfiguration('clang-format', document?.uri);
+    const platform = getPlatformString();
+    const config = vscode.workspace.getConfiguration('clang-format', document?.uri);
 
-    let platformExecPath = config.get<string>('executable.' + platform);
-    let defaultExecPath = config.get<string>('executable');
-    let execPath = platformExecPath || defaultExecPath;
+    const platformExecPath = config.get<string>('executable.' + platform);
+    const defaultExecPath = config.get<string>('executable');
+    const execPath = platformExecPath ?? defaultExecPath;
 
     if (!execPath) {
       return this.defaultConfigure.executable;
@@ -248,13 +248,24 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
   }
 
   private getLanguage(document: vscode.TextDocument): string {
-    return (ALIAS as { [key: string]: string })[document.languageId] || document.languageId;
+    const langId = document.languageId;
+    const mappedLang = (ALIAS as Record<string, string>)[langId] || langId;
+    outputChannel.appendLine(`Document language ID: ${langId}, mapped to: ${mappedLang}`);
+    return mappedLang;
   }
 
   private getStyle(document: vscode.TextDocument) {
+    const language = this.getLanguage(document);
+    const config = vscode.workspace.getConfiguration('clang-format', document.uri);
+    
     // Get language-specific style with document URI
-    let config = vscode.workspace.getConfiguration('clang-format', document.uri);
-    let ret = config.get<string>(`language.${this.getLanguage(document)}.style`) ?? '';
+    const languageStyleKey = `language.${language}.style`;
+    
+    let ret = config.get<string>(languageStyleKey);
+    
+    // If we got undefined or null, convert to empty string
+    ret = ret ?? '';
+    
     ret = ret.replace(/\${workspaceRoot}/g, this.getWorkspaceFolder(document) ?? '')
       .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder(document) ?? '')
       .replace(/\${cwd}/g, process.cwd())
@@ -266,6 +277,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
         }
         return process.env[envName] ?? '';
       });
+    
     if (ret.trim()) {
       return ret;
     }
@@ -283,30 +295,37 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
         }
         return process.env[envName] ?? '';
       });
-    return ret.trim() ? ret : this.defaultConfigure.style;
+    
+    const finalStyle = ret.trim() ? ret : this.defaultConfigure.style;
+    return finalStyle;
   }
 
   private getFallbackStyle(document: vscode.TextDocument) {
     // Get language-specific fallback style with document URI
-    let config = vscode.workspace.getConfiguration('clang-format', document.uri);
+    const config = vscode.workspace.getConfiguration('clang-format', document.uri);
     let strConf = config.get<string>(`language.${this.getLanguage(document)}.fallbackStyle`);
     if (strConf?.trim()) {
       return strConf;
     }
 
-    // Fallback to global fallback style
+    // Try global fallback style
     strConf = config.get<string>('fallbackStyle');
-    return strConf?.trim() ? strConf : this.defaultConfigure.fallbackStyle;
+    if (strConf?.trim()) {
+      return strConf;
+    }
+
+    // If no fallback style is configured, use default
+    return this.defaultConfigure.fallbackStyle;
   }
 
   private getAssumedFilename(document: vscode.TextDocument) {
-    let config = vscode.workspace.getConfiguration('clang-format', document.uri);
-    let assumedFilename = config.get<string>('assumeFilename') ?? '';
+    const config = vscode.workspace.getConfiguration('clang-format', document.uri);
+    const assumedFilename = config.get<string>('assumeFilename') ?? '';
     if (assumedFilename === '') {
       return document.fileName;
     }
-    let parsedPath = path.parse(document.fileName);
-    let fileNoExtension = path.join(parsedPath.dir, parsedPath.name);
+    const parsedPath = path.parse(document.fileName);
+    const fileNoExtension = path.join(parsedPath.dir, parsedPath.name);
     return assumedFilename
         .replace(/\${file}/g, document.fileName)
         .replace(/\${fileNoExtension}/g, fileNoExtension)
@@ -331,7 +350,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
     return undefined;
   }
 
-  private getFormatArgs(document: vscode.TextDocument, range: vscode.Range | undefined, options: vscode.FormattingOptions | null): string[] {
+  private getFormatArgs(document: vscode.TextDocument, range: vscode.Range | undefined): string[] {
     // Validate and sanitize style parameters
     let style = this.getStyle(document);
     let fallbackStyle = this.getFallbackStyle(document);
@@ -382,17 +401,21 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
 
     return [
       ...baseArgs,
-      `-offset=${byteOffset}`,
-      `-length=${byteLength}`
+      `-offset=${String(byteOffset)}`,
+      `-length=${String(byteLength)}`
     ];
   }
 
   private doFormatDocument(document: vscode.TextDocument, range: vscode.Range, options: vscode.FormattingOptions | null, token: vscode.CancellationToken): Promise<vscode.TextEdit[]> {
     return new Promise<vscode.TextEdit[]>((resolve, reject) => {
-      const filename = document.fileName;
       let formatCommandBinPath: string | undefined;
       let child: cp.ChildProcess | undefined;
-      let timeoutId: NodeJS.Timeout | undefined;
+      const timeoutId = setTimeout(() => {
+        cleanup();
+        const timeoutError = new Error('Format operation timed out after 10 seconds');
+        outputChannel.appendLine(`Formatting timed out after 10s for file: ${document.fileName}`);
+        reject(timeoutError);
+      }, 10000);
 
       const cleanup = () => {
         if (timeoutId) {
@@ -403,19 +426,11 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
         }
       };
 
-      // Set a timeout of 10 seconds
-      timeoutId = setTimeout(() => {
-        cleanup();
-        const timeoutError = new Error('Format operation timed out after 10 seconds');
-        outputChannel.appendLine(`Formatting timed out after 10s for file: ${document.fileName}`);
-        reject(timeoutError);
-      }, 10000);
-
       try {
         formatCommandBinPath = getBinPath(this.getExecutablePath(document));
         const codeContent = document.getText();
 
-        const formatArgs = this.getFormatArgs(document, range, options);
+        const formatArgs = this.getFormatArgs(document, range);
         if (!formatArgs) {
           cleanup();
           throw new Error('Failed to get format arguments');
@@ -459,9 +474,9 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
           cleanup();
           
           if (code !== 0) {
-            outputChannel.appendLine(`clang-format exited with code ${code}`);
+            outputChannel.appendLine(`clang-format exited with code ${String(code)}`);
             outputChannel.appendLine(`stderr: ${stderr}`);
-            reject(new Error(`clang-format exited with code ${code}: ${stderr}`));
+            reject(new Error(`clang-format exited with code ${String(code)}: ${stderr}`));
             return;
           }
 

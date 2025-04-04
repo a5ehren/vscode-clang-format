@@ -51,10 +51,10 @@ export const SUPPORTED_LANGUAGES: readonly SupportedLanguage[] = [
   "systemverilog",
 ] as const;
 
-export type StyleOverride = {
+export interface StyleOverride {
   fallbackStyle?: string;
   description?: string;
-};
+}
 
 export const STYLE_OVERRIDES: Readonly<Record<string, StyleOverride>> = {
   csharp: { fallbackStyle: "Microsoft" },

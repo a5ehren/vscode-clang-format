@@ -6,35 +6,40 @@ import {
   ALIAS,
   STYLE_OVERRIDES,
   DISPLAY_NAMES,
+  StyleOverride,
 } from "../shared/languageConfig";
 
-type StyleOverride = {
-  fallbackStyle?: string;
-  description?: string;
-};
+interface PackageJson {
+  activationEvents: string[];
+  contributes: {
+    configuration: {
+      properties: Record<string, unknown>;
+    };
+  };
+}
 
-function generateLanguageConfig(lang: SupportedLanguage): Record<string, any> {
+function generateLanguageConfig(lang: SupportedLanguage): Record<string, unknown> {
   const baseKey = `clang-format.language.${ALIAS[lang] || lang}`;
   const displayName = DISPLAY_NAMES[lang];
-  const override = STYLE_OVERRIDES[lang] || {};
+  const override: StyleOverride = STYLE_OVERRIDES[lang] ?? {};
 
   return {
     [`${baseKey}.enable`]: {
       type: "boolean",
       default: true,
       description:
-        override.description ||
+        override.description ??
         `enable formatting for ${displayName} (requires reloading Extensions)`,
     },
     [`${baseKey}.style`]: {
       type: "string",
       default: "",
-      description: `clang-format fallback style for ${displayName}, leave empty to use clang-format.style`,
+      description: `clang-format style for ${displayName}, leave empty to use global clang-format.style`,
       scope: "resource",
     },
     [`${baseKey}.fallbackStyle`]: {
       type: "string",
-      default: override.fallbackStyle || "",
+      default: override.fallbackStyle ?? "",
       description: `clang-format fallback style for ${displayName}, leave empty to use clang-format.fallbackStyle`,
       scope: "resource",
     },
@@ -48,10 +53,10 @@ function generateActivationEvents(): string[] {
 function main() {
   // Read the existing package.json
   const packageJsonPath = path.join(__dirname, "..", "..", "package.json");
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8")) as PackageJson;
 
   // Generate language configurations
-  const languageConfigs = SUPPORTED_LANGUAGES.reduce((acc, lang) => {
+  const languageConfigs = SUPPORTED_LANGUAGES.reduce<Record<string, unknown>>((acc, lang) => {
     return { ...acc, ...generateLanguageConfig(lang) };
   }, {});
 
