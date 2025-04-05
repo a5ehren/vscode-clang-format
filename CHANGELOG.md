@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.2] - 2025-04-05
+### Fixed
+- Added robustness to fallback parsing and sending
+- Updated devtools for linting
+- 2.0.1 is skipped because I am a dummy and didn't bump rev in the project before publishing.
+
 ## [2.0.0] - 2025-04-03
 ### Fixed
 - Rebuilt extension with modern best practices
