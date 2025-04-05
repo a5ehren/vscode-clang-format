@@ -105,7 +105,7 @@
         "clang-format.language.cpp.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for C++, leave empty to use clang-format.style",
+          "description": "clang-format style for C++, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.cpp.fallbackStyle": {
@@ -122,7 +122,7 @@
         "clang-format.language.c.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for C, leave empty to use clang-format.style",
+          "description": "clang-format style for C, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.c.fallbackStyle": {
@@ -139,7 +139,7 @@
         "clang-format.language.csharp.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for C#, leave empty to use clang-format.style",
+          "description": "clang-format style for C#, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.csharp.fallbackStyle": {
@@ -156,7 +156,7 @@
         "clang-format.language.objective-c.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for Objective-C, leave empty to use clang-format.style",
+          "description": "clang-format style for Objective-C, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.objective-c.fallbackStyle": {
@@ -173,7 +173,7 @@
         "clang-format.language.objective-cpp.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for Objective-C++, leave empty to use clang-format.style",
+          "description": "clang-format style for Objective-C++, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.objective-cpp.fallbackStyle": {
@@ -190,7 +190,7 @@
         "clang-format.language.java.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for Java, leave empty to use clang-format.style",
+          "description": "clang-format style for Java, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.java.fallbackStyle": {
@@ -207,7 +207,7 @@
         "clang-format.language.javascript.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for JavaScript, leave empty to use clang-format.style",
+          "description": "clang-format style for JavaScript, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.javascript.fallbackStyle": {
@@ -224,7 +224,7 @@
         "clang-format.language.json.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for JSON, leave empty to use clang-format.style",
+          "description": "clang-format style for JSON, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.json.fallbackStyle": {
@@ -241,7 +241,7 @@
         "clang-format.language.typescript.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for TypeScript, leave empty to use clang-format.style",
+          "description": "clang-format style for TypeScript, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.typescript.fallbackStyle": {
@@ -258,7 +258,7 @@
         "clang-format.language.proto.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for Protobuf, leave empty to use clang-format.style",
+          "description": "clang-format style for Protobuf, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.proto.fallbackStyle": {
@@ -275,7 +275,7 @@
         "clang-format.language.textproto.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for textproto, leave empty to use clang-format.style",
+          "description": "clang-format style for textproto, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.textproto.fallbackStyle": {
@@ -292,7 +292,7 @@
         "clang-format.language.apex.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for Apex, leave empty to use clang-format.style",
+          "description": "clang-format style for Apex, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.apex.fallbackStyle": {
@@ -309,7 +309,7 @@
         "clang-format.language.glsl.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for GLSL, leave empty to use clang-format.style",
+          "description": "clang-format style for GLSL, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.glsl.fallbackStyle": {
@@ -326,7 +326,7 @@
         "clang-format.language.hlsl.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for HLSL, leave empty to use clang-format.style",
+          "description": "clang-format style for HLSL, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.hlsl.fallbackStyle": {
@@ -343,7 +343,7 @@
         "clang-format.language.cuda.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for CUDA, leave empty to use clang-format.style",
+          "description": "clang-format style for CUDA, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.cuda.fallbackStyle": {
@@ -360,7 +360,7 @@
         "clang-format.language.cuda-cpp.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for CUDA C++, leave empty to use clang-format.style",
+          "description": "clang-format style for CUDA C++, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.cuda-cpp.fallbackStyle": {
@@ -377,7 +377,7 @@
         "clang-format.language.tablegen.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for TableGen, leave empty to use clang-format.style",
+          "description": "clang-format style for TableGen, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.tablegen.fallbackStyle": {
@@ -394,7 +394,7 @@
         "clang-format.language.metal.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for Metal Shader Files, leave empty to use clang-format.style",
+          "description": "clang-format style for Metal Shader Files, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.metal.fallbackStyle": {
@@ -411,7 +411,7 @@
         "clang-format.language.verilog.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for Verilog, leave empty to use clang-format.style",
+          "description": "clang-format style for Verilog, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.verilog.fallbackStyle": {
@@ -428,7 +428,7 @@
         "clang-format.language.systemverilog.style": {
           "type": "string",
           "default": "",
-          "description": "clang-format fallback style for SystemVerilog, leave empty to use clang-format.style",
+          "description": "clang-format style for SystemVerilog, leave empty to use global clang-format.style",
           "scope": "resource"
         },
         "clang-format.language.systemverilog.fallbackStyle": {
