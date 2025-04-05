@@ -134,6 +134,39 @@ jobs:
       - name: Install Dependencies
         run: npm ci
         
+      - name: Validate CHANGELOG
+        run: |
+          # Extract version from release tag (e.g. v1.2.3 -> 1.2.3)
+          VERSION=${GITHUB_REF#refs/tags/v}
+          
+          # Check if version exists in CHANGELOG.md
+          if ! grep -q "## \[${VERSION}\]" CHANGELOG.md; then
+            echo "Error: Version ${VERSION} not found in CHANGELOG.md"
+            echo "Please update CHANGELOG.md with the latest version before creating a release"
+            exit 1
+          fi
+          
+          echo "✓ CHANGELOG.md contains version ${VERSION}"
+        
+      - name: Update Version
+        run: |
+          # Extract version from release tag (e.g. v1.2.3 -> 1.2.3)
+          VERSION=${GITHUB_REF#refs/tags/v}
+          
+          # Update package.json version
+          npm version $VERSION --no-git-tag-version --allow-same-version
+          
+          # Configure git for commit
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Commit the version update
+          git add package.json
+          git commit -m "chore: update version to ${VERSION} [skip ci]"
+          
+          # Push changes back to the repository
+          git push
+        
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
@@ -165,3 +198,29 @@ jobs:
           name: ${{ github.ref_name }}
           fail_on_unmatched_files: true
           files: ${{ needs.build-lint-test.outputs.vsixPath }}
+
+  cleanup-on-failure:
+    name: Cleanup Failed Release
+    needs: publish
+    if: failure() && github.event_name == 'release'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete Failed Release Tag
+        run: |
+          echo "Cleaning up failed release..."
+          
+          # Delete the local tag
+          git tag -d ${GITHUB_REF#refs/tags/}
+          
+          # Delete the remote tag
+          git push --delete origin ${GITHUB_REF#refs/tags/}
+          
+          echo "✓ Cleaned up release tag ${GITHUB_REF#refs/tags/}"
