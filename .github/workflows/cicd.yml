@@ -125,6 +125,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Full history for better versioning
+          ref: "main"
       
       - name: Install Node v20
         uses: actions/setup-node@v4
