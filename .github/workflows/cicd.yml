@@ -21,7 +21,7 @@ permissions:
 jobs:
   build-lint-test:
     needs: version-bump
-    if: ${{ github.event_name != 'release' || needs.version-bump.result == 'success' }}
+    if: always()
     name: Node ${{ matrix.node }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -177,6 +177,7 @@ jobs:
   publish:
     name: Publish Github Action
     needs:
+      - version-bump
       - build-lint-test
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
