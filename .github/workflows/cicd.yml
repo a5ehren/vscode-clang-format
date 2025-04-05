@@ -21,6 +21,7 @@ permissions:
 jobs:
   build-lint-test:
     needs: version-bump
+    if: ${{ github.event_name != 'release' || needs.version-bump.result == 'success' }}
     name: Node ${{ matrix.node }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
