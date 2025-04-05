@@ -6,7 +6,7 @@ on:
       - "*"
   pull_request:
     branches:
-      - master
+      - main
   release:
     types:
       - published
@@ -20,6 +20,7 @@ permissions:
 
 jobs:
   build-lint-test:
+    needs: version-bump
     name: Node ${{ matrix.node }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -106,18 +107,18 @@ jobs:
           name: ${{ matrix.os }}
           path: ${{ steps.packageExtension.outputs.vsixPath }}
           retention-days: 5  # Limit artifact retention
-
-  publish:
-    name: Publish Github Action
-    needs:
-      - build-lint-test
+  
+  version-bump:
+    name: Version Bump
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     permissions:
       contents: write
-      packages: write
-    
+      security-events: write
+    strategy:
+      fail-fast: true
+
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
@@ -133,7 +134,7 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
-        
+      
       - name: Validate CHANGELOG
         run: |
           # Extract version from release tag (e.g. v1.2.3 -> 1.2.3)
@@ -170,6 +171,34 @@ jobs:
         with:
           default_author: "github_actions"
           message: "Increment version to ${{ steps.increment-version.outputs.VERSION }} [skip ci]"
+          add: "*.json"
+        
+  publish:
+    name: Publish Github Action
+    needs:
+      - build-lint-test
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      packages: write
+    
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better versioning
+      
+      - name: Install Node v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Dependencies
+        run: npm ci
         
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
