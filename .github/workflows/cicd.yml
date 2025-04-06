@@ -57,13 +57,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-          cache: 'npm'  # Enable npm caching
+          cache: 'yarn'  # Enable yarn caching
 
       - name: Install Dependencies
-        run: npm ci
+        run: yarn install --immutable
         
-      - name: Run npm audit
-        run: npm audit
+      - name: Run yarn audit
+        run: yarn npm audit --environment production
         continue-on-error: true  # Don't fail the build, but report issues
         
       - name: Run CodeQL Analysis
@@ -77,22 +77,22 @@ jobs:
         if: github.event_name == 'schedule'
 
       - name: Run Linter
-        run: npm run eslint
+        run: yarn run eslint
 
       - name: Build Code (Standard)
-        run: npm run compile
+        run: yarn run compile
         if: github.event_name != 'release'
 
       - name: Build Code (Release)
-        run: npm run package
+        run: yarn run package
         if: github.event_name == 'release'
 
       - name: Run Unit Tests on Windows or macOS
-        run: npm run test
+        run: yarn run test
         if: runner.os != 'Linux'
 
       - name: Run Unit Tests on Linux
-        run: xvfb-run -a npm test
+        run: xvfb-run -a yarn run test
         if: runner.os == 'Linux'
 
       - name: Package Extension
@@ -137,11 +137,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          registry-url: 'https://registry.npmjs.org'
+          cache: 'yarn'
 
       - name: Install Dependencies
-        run: npm ci
+        run: yarn install --immutable
       
       - name: Validate CHANGELOG
         run: |
@@ -164,7 +163,7 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/v}
           
           # Update package.json version
-          npm version $VERSION --no-git-tag-version --allow-same-version
+          yarn version $VERSION
       - uses: EndBug/add-and-commit@v9
         with:
           default_author: "github_actions"
@@ -193,11 +192,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          registry-url: 'https://registry.npmjs.org'
+          cache: 'yarn'
 
       - name: Install Dependencies
-        run: npm ci
+        run: yarn install --immutable
         
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
