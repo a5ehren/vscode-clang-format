@@ -37,3 +37,4 @@ yarn.lock
 package-lock.json
 npm-debug.log
 .clang-format
+**/*.js.map
