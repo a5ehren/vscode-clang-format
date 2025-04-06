@@ -489,5 +489,6 @@
     "type": "git",
     "url": "https://github.com/a5ehren/vscode-clang-format"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "packageManager": "yarn@4.8.1"
 }
