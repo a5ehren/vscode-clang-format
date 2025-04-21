@@ -123,16 +123,7 @@ jobs:
           fetch-depth: 0  # Full history for better versioning
           ref: "main"
       
-      - name: Install Node v20
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'yarn'
-
-      - name: Install Dependencies
-        run: yarn install --immutable
-      
-      - name: Validate CHANGELOG
+      - name: Validate CHANGELOG and package.json
         run: |
           # Extract version from release tag (e.g. v1.2.3 -> 1.2.3)
           VERSION=${GITHUB_REF#refs/tags/v}
@@ -143,27 +134,16 @@ jobs:
             echo "Please update CHANGELOG.md with the latest version before creating a release"
             exit 1
           fi
+
+          if ! grep -q "\"version\": \"${VERSION}\"" package.json; then
+            echo "Error: Version ${VERSION} not found in package.json"
+            echo "Please update package.json with the latest version before creating a release"
+            exit 1
+          fi
           
           echo "✓ CHANGELOG.md contains version ${VERSION}"
+          echo "✓ package.json contains version ${VERSION}"
         
-      - name: Update Version
-        id: increment-version
-        run: |
-          # Extract version from release tag (e.g. v1.2.3 -> 1.2.3)
-          VERSION=${GITHUB_REF#refs/tags/v}
-          
-          # Update package.json version
-          yarn version $VERSION
-          
-          # Set VERSION as an output variable
-          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
-      - uses: EndBug/add-and-commit@v9
-        with:
-          default_author: "github_actions"
-          message: "Increment version to ${{ steps.increment-version.outputs.VERSION }} [skip ci]"
-          add: "*.json"
-          tag: "${{ github.ref_name }} --force"
-          tag_push: '--force'
         
   publish:
     name: Publish Github Action
