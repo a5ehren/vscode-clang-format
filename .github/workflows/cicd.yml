@@ -163,6 +163,7 @@ jobs:
           message: "Increment version to ${{ steps.increment-version.outputs.VERSION }} [skip ci]"
           add: "*.json"
           tag: "${{ github.ref_name }} --force"
+          tag_push: '--force'
         
   publish:
     name: Publish Github Action
