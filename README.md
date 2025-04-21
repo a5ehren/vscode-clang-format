@@ -9,7 +9,10 @@ This project is a fork of the older [vscode-clang-format](https://github.com/xav
 ## Usage
 
 This extension allows clang-format to be used to format C/C++, Javascript etc.
-source files directly from within Visual Studio Code 1.96+.
+source files directly from within Visual Studio Code 1.96+. Note that this
+extension is not needed if you are running the full clangd LSP extension -
+it is only made available here for people who want to use clang-format without
+all the other features clangd provides.
 
 Files can be formatted on-demand by right clicking in the document and
 selecting "Format Document", or by using the associated keyboard shortcut
