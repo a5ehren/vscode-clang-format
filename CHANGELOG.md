@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.3] - 2025-04-21
+### Fixed
+- Update README
+- Refresh dev packages and add some devtools to help future dev
+
 ## [2.0.2] - 2025-04-05
 ### Fixed
 - Added robustness to fallback parsing and sending
