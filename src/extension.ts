@@ -75,7 +75,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
     assumeFilename: ''
   };
 
-  public provideDocumentFormattingEdits(document: vscode.TextDocument, options: vscode.FormattingOptions, token: vscode.CancellationToken): Thenable<vscode.TextEdit[]> {
+  public provideDocumentFormattingEdits(document: vscode.TextDocument, options: vscode.FormattingOptions, token: vscode.CancellationToken): Promise<vscode.TextEdit[]> {
     const fullRange = new vscode.Range(
       document.positionAt(0),
       document.positionAt(document.getText().length)
@@ -83,7 +83,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
     return this.doFormatDocument(document, fullRange, options, token);
   }
 
-  public provideDocumentRangeFormattingEdits(document: vscode.TextDocument, range: vscode.Range, options: vscode.FormattingOptions, token: vscode.CancellationToken): Thenable<vscode.TextEdit[]> {
+  public provideDocumentRangeFormattingEdits(document: vscode.TextDocument, range: vscode.Range, options: vscode.FormattingOptions, token: vscode.CancellationToken): Promise<vscode.TextEdit[]> {
     return this.doFormatDocument(document, range, options, token);
   }
 
@@ -516,7 +516,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
     });
   }
 
-  public formatDocument(document: vscode.TextDocument): Thenable<vscode.TextEdit[]> {
+  public formatDocument(document: vscode.TextDocument): Promise<vscode.TextEdit[]> {
     const fullRange = new vscode.Range(
       document.positionAt(0),
       document.positionAt(document.getText().length)
