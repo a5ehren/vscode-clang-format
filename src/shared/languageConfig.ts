@@ -1,33 +1,12 @@
 "use strict";
 
-export const ALIAS: Readonly<Record<string, string>> = {
+const ALIAS: Readonly<Partial<Record<string, string>>> = {
   proto3: "proto",
-} as const;
+};
 
-export type SupportedLanguage =
-  | "cpp"
-  | "c"
-  | "csharp"
-  | "objective-c"
-  | "objective-cpp"
-  | "java"
-  | "javascript"
-  | "json"
-  | "typescript"
-  | "proto"
-  | "proto3"
-  | "textproto"
-  | "apex"
-  | "glsl"
-  | "hlsl"
-  | "cuda"
-  | "cuda-cpp"
-  | "tablegen"
-  | "metal"
-  | "verilog"
-  | "systemverilog";
+export { ALIAS };
 
-export const SUPPORTED_LANGUAGES: readonly SupportedLanguage[] = [
+export const SUPPORTED_LANGUAGES = [
   "cpp",
   "c",
   "csharp",
@@ -51,20 +30,22 @@ export const SUPPORTED_LANGUAGES: readonly SupportedLanguage[] = [
   "systemverilog",
 ] as const;
 
+export type SupportedLanguage = typeof SUPPORTED_LANGUAGES[number];
+
 export interface StyleOverride {
   fallbackStyle?: string;
   description?: string;
 }
 
-export const STYLE_OVERRIDES: Readonly<Record<string, StyleOverride>> = {
+export const STYLE_OVERRIDES: Readonly<Partial<Record<string, StyleOverride>>> = {
   csharp: { fallbackStyle: "Microsoft" },
   javascript: { fallbackStyle: "google" },
   typescript: { fallbackStyle: "google" },
   textproto: { description: "enable formatting for textproto files" },
   metal: { description: "enable formatting for Metal Shader Files" },
-} as const;
+};
 
-export const DISPLAY_NAMES: Readonly<Record<string, string>> = {
+export const DISPLAY_NAMES = {
   cpp: "C++",
   c: "C",
   csharp: "C#",
@@ -86,4 +67,4 @@ export const DISPLAY_NAMES: Readonly<Record<string, string>> = {
   verilog: "Verilog",
   systemverilog: "SystemVerilog",
   json: "JSON",
-} as const;
+} as const satisfies Readonly<Record<string, string>>;
