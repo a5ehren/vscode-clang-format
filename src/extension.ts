@@ -362,7 +362,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
     }
 
     // Validate fallback style - only allow known values
-    const validFallbackStyles = ['none', 'llvm', 'google', 'chromium', 'mozilla', 'webkit', 'microsoft', 'gnu'];
+    const validFallbackStyles = ['none', ...validStyles];
     if (!validFallbackStyles.includes(fallbackStyle.toLowerCase())) {
       outputChannel.appendLine(`Warning: Invalid fallback style "${fallbackStyle}", falling back to "none"`);
       fallbackStyle = 'none';
@@ -508,7 +508,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
         cleanup();
         const errorMessage = err instanceof Error ? err.message : 'unknown error';
         outputChannel.appendLine(`Error during formatting: ${errorMessage}`);
-        reject(new Error(`Error during formatting: ${errorMessage}`));
+        reject(new Error(`Error during formatting: ${errorMessage}`, { cause: err }));
       }
     });
   }
@@ -532,7 +532,7 @@ export function activate(ctx: vscode.ExtensionContext): void {
   const formatter = new ClangDocumentFormattingEditProvider();
   const availableLanguages = new Set<string>();
 
-  MODES.forEach((mode) => {
+  for (const mode of MODES) {
     if (typeof mode.language === 'string') {
       ctx.subscriptions.push(
         vscode.languages.registerDocumentRangeFormattingEditProvider(mode, formatter),
@@ -540,7 +540,7 @@ export function activate(ctx: vscode.ExtensionContext): void {
       );
       availableLanguages.add(mode.language);
     }
-  });
+  }
 }
 
 export function deactivate(): void {
