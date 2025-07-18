@@ -260,10 +260,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
     // Get language-specific style with document URI
     const languageStyleKey = `language.${language}.style`;
     
-    let ret = config.get<string>(languageStyleKey);
-    
-    // If we got undefined or null, convert to empty string
-    ret = ret ?? '';
+    let ret = config.get<string>(languageStyleKey) ?? '';
     
     ret = ret.replace(/\${workspaceRoot}/g, this.getWorkspaceFolder(document) ?? '')
       .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder(document) ?? '')
