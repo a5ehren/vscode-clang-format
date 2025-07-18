@@ -238,8 +238,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
       .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder(document) ?? '')
       .replace(/\${cwd}/g, process.cwd())
       .replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
-        // Only allow alphanumeric and underscore characters in env var names
-        if (!/^[a-zA-Z0-9_]+$/.test(envName)) {
+        if (!/^[a-z_]\w*$/i.test(envName)) {
           outputChannel.appendLine(`Warning: Invalid environment variable name: ${envName}`);
           return '';
         }
@@ -270,8 +269,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
       .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder(document) ?? '')
       .replace(/\${cwd}/g, process.cwd())
       .replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
-        // Only allow alphanumeric and underscore characters in env var names
-        if (!/^[a-zA-Z0-9_]+$/.test(envName)) {
+        if (!/^[a-z_]\w*$/i.test(envName)) {
           outputChannel.appendLine(`Warning: Invalid environment variable name: ${envName}`);
           return '';
         }
@@ -288,8 +286,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
       .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder(document) ?? '')
       .replace(/\${cwd}/g, process.cwd())
       .replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
-        // Only allow alphanumeric and underscore characters in env var names
-        if (!/^[a-zA-Z0-9_]+$/.test(envName)) {
+        if (!/^[a-z_]\w*$/i.test(envName)) {
           outputChannel.appendLine(`Warning: Invalid environment variable name: ${envName}`);
           return '';
         }
