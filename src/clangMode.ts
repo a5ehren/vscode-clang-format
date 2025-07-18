@@ -13,7 +13,7 @@ let MODES: readonly vscode.DocumentFilter[] = [];
 function updateLanguages(): void {
   languages = [];
   for (const lang of SUPPORTED_LANGUAGES) {
-    const confKey = `language.${ALIAS[lang] || lang}.enable`;
+    const confKey = `language.${ALIAS[lang] ?? lang}.enable`;
     if (vscode.workspace.getConfiguration('clang-format').get<boolean>(confKey)) {
       languages.push(lang);
     }
