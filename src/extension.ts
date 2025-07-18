@@ -152,14 +152,14 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
             const length = tag.attributes.length;
             const offset = tag.attributes.offset;
             
-            if (!length || !offset) {
+            if (typeof length !== 'string' || typeof offset !== 'string') {
               handleError(new Error('Malformed XML: missing required attributes'));
               return;
             }
 
             currentEdit = {
-              length: parseInt(String(length)),
-              offset: parseInt(String(offset)),
+              length: parseInt(length),
+              offset: parseInt(offset),
               text: ''
             };
             byteToOffset(currentEdit);
