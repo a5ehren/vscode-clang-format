@@ -466,23 +466,23 @@
     "prettier-write": "prettier --write src/**/*.ts src/**/*.js"
   },
   "devDependencies": {
-    "@eslint/js": "^9.24.0",
-    "@tsconfig/node20": "^20.1.5",
+    "@eslint/js": "^9.31.0",
+    "@tsconfig/node20": "^20.1.6",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^20.17.30",
+    "@types/node": "^20.19.9",
     "@types/sax": "^1.2.7",
     "@types/vscode": "^1.96.0",
-    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
-    "@vscode/vsce": "^3.3.2",
-    "esbuild": "^0.25.2",
-    "eslint": "^9.24.0",
-    "eslint-config-prettier": "^10.1.2",
+    "@vscode/vsce": "^3.6.0",
+    "esbuild": "^0.25.8",
+    "eslint": "^9.31.0",
+    "eslint-config-prettier": "^10.1.8",
     "npm-run-all": "^4.1.5",
-    "prettier": "^3.5.3",
+    "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.30.1"
+    "typescript-eslint": "^8.37.0"
   },
   "icon": "clang-format.png",
   "repository": {
@@ -490,5 +490,9 @@
     "url": "https://github.com/a5ehren/vscode-clang-format"
   },
   "license": "MIT",
-  "packageManager": "yarn@4.9.1"
+  "packageManager": "yarn@4.9.2",
+  "volta": {
+    "node": "20.19.4",
+    "yarn": "4.9.2"
+  }
 }
