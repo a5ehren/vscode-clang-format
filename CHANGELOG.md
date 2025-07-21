@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.4] - 2025-07-21
+### Fixed
+- Minor modernization (by [nopeless](https://github.com/nopeless))
+- Refresh depends and devdepends
+
 ## [2.0.3] - 2025-04-21
 ### Fixed
 - Update README
