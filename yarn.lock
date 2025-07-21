@@ -905,10 +905,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/vscode@npm:^1.96.0":
-  version: 1.99.0
-  resolution: "@types/vscode@npm:1.99.0"
-  checksum: 10c0/b517abdf325ec85dfe5dad45cbc4167b67c2fe0b695a6bd46247514033ae656fc21e40df5dfee9df0293ca8e80710316e0f9a167659da8f233dc32af417bee2f
+"@types/vscode@npm:~1.96.0":
+  version: 1.96.0
+  resolution: "@types/vscode@npm:1.96.0"
+  checksum: 10c0/3fb7ba394f6a8d6a4725b7ad0f0a4dd506371af934f7dc709989fd4b8f587cce96efb042e0d3af2b416b4bb74ecb2a5375c61f21b6b0cd86d85c6bdd2dcb2828
   languageName: node
   linkType: hard
 
@@ -1763,7 +1763,7 @@ __metadata:
     "@types/mocha": "npm:^10.0.10"
     "@types/node": "npm:^20.19.9"
     "@types/sax": "npm:^1.2.7"
-    "@types/vscode": "npm:^1.96.0"
+    "@types/vscode": "npm:~1.96.0"
     "@types/which": "npm:^3.0.4"
     "@vscode/test-cli": "npm:^0.0.11"
     "@vscode/test-electron": "npm:^2.5.2"
@@ -5771,14 +5771,14 @@ __metadata:
   linkType: hard
 
 "tar-fs@npm:^2.0.0":
-  version: 2.1.2
-  resolution: "tar-fs@npm:2.1.2"
+  version: 2.1.3
+  resolution: "tar-fs@npm:2.1.3"
   dependencies:
     chownr: "npm:^1.1.1"
     mkdirp-classic: "npm:^0.5.2"
     pump: "npm:^3.0.0"
     tar-stream: "npm:^2.1.4"
-  checksum: 10c0/9c704bd4a53be7565caf34ed001d1428532457fe3546d8fc1233f0f0882c3d2403f8602e8046e0b0adeb31fe95336572a69fb28851a391523126b697537670fc
+  checksum: 10c0/472ee0c3c862605165163113ab6924f411c07506a1fb24c51a1a80085f0d4d381d86d2fd6b189236c8d932d1cd97b69cce35016767ceb658a35f7584fe77f305
   languageName: node
   linkType: hard
 
