@@ -19,7 +19,7 @@ interface PackageJson {
 }
 
 function generateLanguageConfig(lang: SupportedLanguage): Record<string, unknown> {
-  const baseKey = `clang-format.language.${ALIAS[lang] || lang}`;
+  const baseKey = `clang-format.language.${ALIAS[lang] ?? lang}`;
   const displayName = DISPLAY_NAMES[lang];
   const override: StyleOverride = STYLE_OVERRIDES[lang] ?? {};
 

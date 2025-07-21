@@ -75,7 +75,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
     assumeFilename: ''
   };
 
-  public provideDocumentFormattingEdits(document: vscode.TextDocument, options: vscode.FormattingOptions, token: vscode.CancellationToken): Thenable<vscode.TextEdit[]> {
+  public provideDocumentFormattingEdits(document: vscode.TextDocument, options: vscode.FormattingOptions, token: vscode.CancellationToken): Promise<vscode.TextEdit[]> {
     const fullRange = new vscode.Range(
       document.positionAt(0),
       document.positionAt(document.getText().length)
@@ -83,7 +83,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
     return this.doFormatDocument(document, fullRange, options, token);
   }
 
-  public provideDocumentRangeFormattingEdits(document: vscode.TextDocument, range: vscode.Range, options: vscode.FormattingOptions, token: vscode.CancellationToken): Thenable<vscode.TextEdit[]> {
+  public provideDocumentRangeFormattingEdits(document: vscode.TextDocument, range: vscode.Range, options: vscode.FormattingOptions, token: vscode.CancellationToken): Promise<vscode.TextEdit[]> {
     return this.doFormatDocument(document, range, options, token);
   }
 
@@ -152,14 +152,14 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
             const length = tag.attributes.length;
             const offset = tag.attributes.offset;
             
-            if (!length || !offset) {
+            if (typeof length !== 'string' || typeof offset !== 'string') {
               handleError(new Error('Malformed XML: missing required attributes'));
               return;
             }
 
             currentEdit = {
-              length: parseInt(String(length)),
-              offset: parseInt(String(offset)),
+              length: parseInt(length),
+              offset: parseInt(offset),
               text: ''
             };
             byteToOffset(currentEdit);
@@ -238,8 +238,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
       .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder(document) ?? '')
       .replace(/\${cwd}/g, process.cwd())
       .replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
-        // Only allow alphanumeric and underscore characters in env var names
-        if (!/^[a-zA-Z0-9_]+$/.test(envName)) {
+        if (!/^[a-z_]\w*$/i.test(envName)) {
           outputChannel.appendLine(`Warning: Invalid environment variable name: ${envName}`);
           return '';
         }
@@ -261,17 +260,13 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
     // Get language-specific style with document URI
     const languageStyleKey = `language.${language}.style`;
     
-    let ret = config.get<string>(languageStyleKey);
-    
-    // If we got undefined or null, convert to empty string
-    ret = ret ?? '';
+    let ret = config.get<string>(languageStyleKey) ?? '';
     
     ret = ret.replace(/\${workspaceRoot}/g, this.getWorkspaceFolder(document) ?? '')
       .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder(document) ?? '')
       .replace(/\${cwd}/g, process.cwd())
       .replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
-        // Only allow alphanumeric and underscore characters in env var names
-        if (!/^[a-zA-Z0-9_]+$/.test(envName)) {
+        if (!/^[a-z_]\w*$/i.test(envName)) {
           outputChannel.appendLine(`Warning: Invalid environment variable name: ${envName}`);
           return '';
         }
@@ -288,8 +283,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
       .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder(document) ?? '')
       .replace(/\${cwd}/g, process.cwd())
       .replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
-        // Only allow alphanumeric and underscore characters in env var names
-        if (!/^[a-zA-Z0-9_]+$/.test(envName)) {
+        if (!/^[a-z_]\w*$/i.test(envName)) {
           outputChannel.appendLine(`Warning: Invalid environment variable name: ${envName}`);
           return '';
         }
@@ -365,7 +359,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
     }
 
     // Validate fallback style - only allow known values
-    const validFallbackStyles = ['none', 'llvm', 'google', 'chromium', 'mozilla', 'webkit', 'microsoft', 'gnu'];
+    const validFallbackStyles = ['none', ...validStyles];
     if (!validFallbackStyles.includes(fallbackStyle.toLowerCase())) {
       outputChannel.appendLine(`Warning: Invalid fallback style "${fallbackStyle}", falling back to "none"`);
       fallbackStyle = 'none';
@@ -511,12 +505,12 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
         cleanup();
         const errorMessage = err instanceof Error ? err.message : 'unknown error';
         outputChannel.appendLine(`Error during formatting: ${errorMessage}`);
-        reject(new Error(`Error during formatting: ${errorMessage}`));
+        reject(new Error(`Error during formatting: ${errorMessage}`, { cause: err }));
       }
     });
   }
 
-  public formatDocument(document: vscode.TextDocument): Thenable<vscode.TextEdit[]> {
+  public formatDocument(document: vscode.TextDocument): Promise<vscode.TextEdit[]> {
     const fullRange = new vscode.Range(
       document.positionAt(0),
       document.positionAt(document.getText().length)
@@ -535,7 +529,7 @@ export function activate(ctx: vscode.ExtensionContext): void {
   const formatter = new ClangDocumentFormattingEditProvider();
   const availableLanguages = new Set<string>();
 
-  MODES.forEach((mode) => {
+  for (const mode of MODES) {
     if (typeof mode.language === 'string') {
       ctx.subscriptions.push(
         vscode.languages.registerDocumentRangeFormattingEditProvider(mode, formatter),
@@ -543,7 +537,7 @@ export function activate(ctx: vscode.ExtensionContext): void {
       );
       availableLanguages.add(mode.language);
     }
-  });
+  }
 }
 
 export function deactivate(): void {
