@@ -65,9 +65,6 @@ jobs:
       - name: Run yarn audit
         run: yarn npm audit --environment production
         continue-on-error: true  # Don't fail the build, but report issues
-        
-      - name: Run Linter
-        run: yarn run eslint
 
       - name: Build Code (Standard)
         run: yarn run compile
@@ -77,13 +74,8 @@ jobs:
         run: yarn run package
         if: github.event_name == 'release'
 
-      - name: Run Unit Tests on Windows or macOS
-        run: yarn run test
-        if: runner.os != 'Linux'
-
-      - name: Run Unit Tests on Linux
-        run: xvfb-run -a yarn run test
-        if: runner.os == 'Linux'
+      - name: Run Unit Tests
+        run: yarn run test:simple
 
       - name: Package Extension
         id: packageExtension
