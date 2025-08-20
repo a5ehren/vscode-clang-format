@@ -57,11 +57,35 @@ function getBinPath(binname: string): string {
   try {
     // Try to find the binary using which
     const binPath = whichSync(binname);
-    binPathCache[binname] = binPath;
-    return binPath;
-  } catch (_) {
+    
+    // Validate the path and handle spaces properly
+    if (binPath?.trim()) {
+      // Normalize the path to handle platform-specific separators
+      const normalizedPath = path.normalize(binPath.trim());
+      
+      // Verify the path exists and is accessible
+      try {
+        const stats = statSync(normalizedPath);
+        if (stats.isFile()) {
+          binPathCache[binname] = normalizedPath;
+          return normalizedPath;
+        }
+      } catch (statError: unknown) {
+        // Path exists but stat failed, log warning but continue
+        const statErrorMessage = statError instanceof Error ? statError.message : String(statError);
+        outputChannel.appendLine(`Warning: Could not stat binary at ${normalizedPath}: ${statErrorMessage}`);
+        binPathCache[binname] = normalizedPath;
+        return normalizedPath;
+      }
+    }
+    
+    // If we get here, something went wrong with the path
+    throw new Error(`Invalid binary path returned by which: ${binPath}`);
+  } catch (error) {
     // If which fails, return the binary name as-is
     // This maintains compatibility with the old behavior
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    outputChannel.appendLine(`Could not find binary '${binname}' in PATH: ${errorMessage}`);
     binPathCache[binname] = binname;
     return binname;
   }

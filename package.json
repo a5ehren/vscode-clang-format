@@ -461,6 +461,8 @@
     "eslint-fix": "eslint --fix --ext .js,.ts ./src",
     "eslint-check": "eslint --print-config ./src/extension.ts && eslint-config-prettier ./src/extension.ts",
     "test": "vscode-test",
+    "test:simple": "ts-node src/test-extension.ts",
+    "test:simple:js": "node src/test-extension.js",
     "generate-config": "ts-node src/scripts/generate-language-config.ts",
     "prepare": "npm run generate-config && npm run package",
     "prettier-write": "prettier --write src/**/*.ts src/**/*.js"
