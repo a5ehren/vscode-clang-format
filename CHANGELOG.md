@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.5] - 2025-08-20
+### Fixed
+- Make sure to normalize path to clang-format to fix problems with spaces and whatnot. Fixes issue #50.
+- Refresh depends and devdepends
+
 ## [2.0.4] - 2025-07-21
 ### Fixed
 - Minor modernization (by [nopeless](https://github.com/nopeless))
