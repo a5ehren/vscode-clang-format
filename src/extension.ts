@@ -377,7 +377,7 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
     // Validate style parameter - only allow known values or file paths
     const validStyles = ['llvm', 'google', 'chromium', 'mozilla', 'webkit', 'microsoft', 'gnu', 'file'];
     const normalizedStyle = style.toLowerCase();
-    if (!validStyles.includes(normalizedStyle) && !normalizedStyle.startsWith('{') && !normalizedStyle.endsWith('}')) {
+    if (!validStyles.includes(normalizedStyle) && !normalizedStyle.startsWith('file:') && !normalizedStyle.startsWith('{') && !normalizedStyle.endsWith('}')) {
       outputChannel.appendLine(`Warning: Invalid style value "${style}", falling back to "file"`);
       style = 'file';
     }
