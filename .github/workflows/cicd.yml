@@ -54,7 +54,7 @@ jobs:
           fetch-depth: 0  # Full history for better versioning
 
       - name: Install Node ${{ matrix.node }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
           cache: 'yarn'  # Enable yarn caching
@@ -156,7 +156,7 @@ jobs:
           fetch-depth: 0  # Full history for better versioning
       
       - name: Install Node v20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 20
           cache: 'yarn'
