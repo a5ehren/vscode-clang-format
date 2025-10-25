@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.6] - 2025-10-25
+### Fixed
+- Refresh depends and devdepends
+
 ## [2.0.6] - 2025-08-27
 ### Fixed
 - feat: allow for custom style files (by [JeremyStarTM](https://github.com/JeremyStarTM))
