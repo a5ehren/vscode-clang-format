@@ -54,7 +54,7 @@ jobs:
           fetch-depth: 0  # Full history for better versioning
 
       - name: Install Node ${{ matrix.node }}
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
           cache: 'yarn'  # Enable yarn caching
@@ -85,7 +85,7 @@ jobs:
           dryRun: true
 
       - name: Upload Extension Package as Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.os }}
           path: ${{ steps.packageExtension.outputs.vsixPath }}
@@ -156,7 +156,7 @@ jobs:
           fetch-depth: 0  # Full history for better versioning
       
       - name: Install Node v20
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: 'yarn'
@@ -165,7 +165,7 @@ jobs:
         run: yarn install --immutable
         
       - name: Download Build Artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: ubuntu-latest
           
