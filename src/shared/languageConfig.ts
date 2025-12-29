@@ -30,20 +30,21 @@ export const SUPPORTED_LANGUAGES = [
   "systemverilog",
 ] as const;
 
-export type SupportedLanguage = typeof SUPPORTED_LANGUAGES[number];
+export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 export interface StyleOverride {
   fallbackStyle?: string;
   description?: string;
 }
 
-export const STYLE_OVERRIDES: Readonly<Partial<Record<string, StyleOverride>>> = {
-  csharp: { fallbackStyle: "Microsoft" },
-  javascript: { fallbackStyle: "google" },
-  typescript: { fallbackStyle: "google" },
-  textproto: { description: "enable formatting for textproto files" },
-  metal: { description: "enable formatting for Metal Shader Files" },
-};
+export const STYLE_OVERRIDES: Readonly<Partial<Record<string, StyleOverride>>> =
+  {
+    csharp: { fallbackStyle: "Microsoft" },
+    javascript: { fallbackStyle: "google" },
+    typescript: { fallbackStyle: "google" },
+    textproto: { description: "enable formatting for textproto files" },
+    metal: { description: "enable formatting for Metal Shader Files" },
+  };
 
 export const DISPLAY_NAMES = {
   cpp: "C++",

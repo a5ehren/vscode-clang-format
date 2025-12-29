@@ -49,12 +49,12 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Checkout Source
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0  # Full history for better versioning
 
       - name: Install Node ${{ matrix.node }}
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
           cache: 'yarn'  # Enable yarn caching
@@ -85,7 +85,7 @@ jobs:
           dryRun: true
 
       - name: Upload Extension Package as Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.os }}
           path: ${{ steps.packageExtension.outputs.vsixPath }}
@@ -109,7 +109,7 @@ jobs:
         with:
           app-id: ${{ vars.YOUR_GITHUB_APP_ID }}
           private-key: ${{ secrets.YOUR_GITHUB_APP_PRIVATE_KEY }}
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           token: ${{ steps.app-token.outputs.token }}
           fetch-depth: 0  # Full history for better versioning
@@ -151,12 +151,12 @@ jobs:
     
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0  # Full history for better versioning
       
       - name: Install Node v20
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: 'yarn'
@@ -165,7 +165,7 @@ jobs:
         run: yarn install --immutable
         
       - name: Download Build Artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: ubuntu-latest
           
@@ -205,7 +205,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
