@@ -18,7 +18,9 @@ interface PackageJson {
   };
 }
 
-function generateLanguageConfig(lang: SupportedLanguage): Record<string, unknown> {
+function generateLanguageConfig(
+  lang: SupportedLanguage,
+): Record<string, unknown> {
   const baseKey = `clang-format.language.${ALIAS[lang] ?? lang}`;
   const displayName = DISPLAY_NAMES[lang];
   const override: StyleOverride = STYLE_OVERRIDES[lang] ?? {};
@@ -53,12 +55,17 @@ function generateActivationEvents(): string[] {
 function main() {
   // Read the existing package.json
   const packageJsonPath = path.join(__dirname, "..", "..", "package.json");
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8")) as PackageJson;
+  const packageJson = JSON.parse(
+    fs.readFileSync(packageJsonPath, "utf8"),
+  ) as PackageJson;
 
   // Generate language configurations
-  const languageConfigs = SUPPORTED_LANGUAGES.reduce<Record<string, unknown>>((acc, lang) => {
-    return { ...acc, ...generateLanguageConfig(lang) };
-  }, {});
+  const languageConfigs = SUPPORTED_LANGUAGES.reduce<Record<string, unknown>>(
+    (acc, lang) => {
+      return { ...acc, ...generateLanguageConfig(lang) };
+    },
+    {},
+  );
 
   // Generate activation events
   packageJson.activationEvents = generateActivationEvents();
