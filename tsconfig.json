@@ -2,8 +2,9 @@
   "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
     "rootDir": "src",
-    "sourceMap": true
+    "sourceMap": true,
+    "types": ["node", "mocha"]
   },
-  "include": ["eslint.config.mjs", "esbuild.js", "src/**/*"],
+  "include": ["vite.config.ts", "src/**/*"],
   "exclude": ["node_modules", ".vscode-test"]
 }

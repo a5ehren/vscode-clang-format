@@ -1,10 +1,45 @@
+import { resolve } from "node:path";
 import { defineConfig } from "vite-plus";
 
+const extensionEntry = resolve("src/extension.ts");
+
 export default defineConfig({
+  build: {
+    ssr: extensionEntry,
+    outDir: "dist",
+    emptyOutDir: true,
+    sourcemap: true,
+    minify: false,
+    rollupOptions: {
+      external: ["vscode"],
+      output: {
+        format: "cjs",
+        entryFileNames: "extension.js",
+      },
+    },
+  },
+  pack: {
+    entry: extensionEntry,
+    format: ["cjs"],
+    outDir: "dist",
+    sourcemap: true,
+    clean: true,
+    fixedExtension: false,
+    minify: false,
+    deps: {
+      neverBundle: ["vscode"],
+    },
+  },
+  test: {
+    exclude: [".vscode-test/**", "src/test/**", "out/**", "dist/**", "node_modules/**"],
+    passWithNoTests: true,
+  },
   staged: {
     "*": "vp check --fix",
   },
-  fmt: {},
+  fmt: {
+    ignorePatterns: ["**/.clang-format"],
+  },
   lint: {
     plugins: ["oxc", "typescript", "unicorn", "react"],
     categories: {

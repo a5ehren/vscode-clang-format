@@ -23,7 +23,7 @@ vscode settings.json file:
 
 ```json
 {
-    "editor.formatOnSave": true
+  "editor.formatOnSave": true
 }
 ```
 
@@ -35,7 +35,7 @@ settings.json file:
 
 ```json
 {
-    "clang-format.executable": "/absolute/path/to/clang-format"
+  "clang-format.executable": "/absolute/path/to/clang-format"
 }
 ```
 
@@ -44,12 +44,11 @@ The following placeholders are supported:
 
 - `${workspaceRoot}` - replaced by the absolute path of the current vscode
   workspace root.
-- `${workspaceFolder}` - replaced by the absolute path of the current vscode 
-  workspace. In case of outside-workspace files `${workspaceFolder}` expands 
+- `${workspaceFolder}` - replaced by the absolute path of the current vscode
+  workspace. In case of outside-workspace files `${workspaceFolder}` expands
   to the absolute path of the first available workspace.
 - `${cwd}` - replaced by the current working directory of vscode.
-- `${env.VAR}` - replaced by the environment variable $VAR, e.g. `${env.HOME}`
-  will be replaced by `$HOME`, your home directory.
+- `${env.VAR}` - replaced by the environment variable $VAR, e.g. `${env.HOME}`will be replaced by`$HOME`, your home directory.
 
 Some examples:
 
@@ -64,6 +63,7 @@ placeholders are `${file}`, `${fileNoExtension}`, `${fileBasename}`,
 predefined variables in [other configuration files](https://code.visualstudio.com/docs/editor/variables-reference).
 
 For example:
+
 - `${fileNoExtension}.cpp` - `/home/src/foo.h` will be formatted with
   `-assume-filename /home/src/foo.cpp`.
 
@@ -75,17 +75,20 @@ On Linux, install `clang-format` from your distro's package manager.
 
 On MacOS, the simplest way is to use [Homebrew](https://brew.sh/) and run `brew install clang-format`.
 
-On Windows, the simplest way is to install LLVM to the default path either using the [installer](https://llvm.org/) or by simply running `winget install -e --id LLVM.LLVM` using [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/). 
+On Windows, the simplest way is to install LLVM to the default path either using the [installer](https://llvm.org/) or by simply running `winget install -e --id LLVM.LLVM` using [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/).
 
 LLVM contains the clang-format binary, the resulting path for the `clang-format.executable` then becomes:
+
 ```json
 {
-    "clang-format.executable": "c:\\Program Files\\LLVM\\bin\\clang-format.exe"
+  "clang-format.executable": "c:\\Program Files\\LLVM\\bin\\clang-format.exe"
 }
 ```
 
 ## Source code
+
 Available on github: https://github.com/a5ehren/vscode-clang-format
 
 ## Update Policy
+
 I consider this extension to be fully feature complete. Releases will be made roughly quarterly if the GitHub dependabot finds changes to be made or there are non-critical issues I can resolve. Security fixes will be released as-needed as quickly as possible.
