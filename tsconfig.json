@@ -1,10 +1,11 @@
 {
   "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
+    "outDir": "out",
     "rootDir": "src",
     "sourceMap": true,
     "types": ["node", "mocha"]
   },
-  "include": ["vite.config.ts", "src/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", ".vscode-test"]
 }
