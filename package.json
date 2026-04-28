@@ -30,7 +30,7 @@
     "vscode:prepublish": "vp pack",
     "check": "vp check",
     "compile": "vp build",
-    "test": "vscode-test",
+    "test": "vp build && vp exec tsc -p . && vp exec vscode-test",
     "prepare": "vp config",
     "format-write": "vp fmt --write src/**/*.ts"
   },
