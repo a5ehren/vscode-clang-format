@@ -53,29 +53,23 @@ jobs:
         with:
           fetch-depth: 0 # Full history for better versioning
 
-      - name: Install Node ${{ matrix.node }}
-        uses: actions/setup-node@v6
+      - uses: voidzero-dev/setup-vp@v1
         with:
           node-version: ${{ matrix.node }}
-          cache: "yarn" # Enable yarn caching
+          cache: true
 
-      - name: Install Dependencies
-        run: yarn install --immutable
-
-      - name: Run yarn audit
-        run: yarn npm audit --environment production
-        continue-on-error: true # Don't fail the build, but report issues
+      - run: vp install --frozen-lockfile
 
       - name: Build Code (Standard)
-        run: yarn run compile
+        run: vp build
         if: github.event_name != 'release'
 
       - name: Build Code (Release)
-        run: yarn run package
+        run: vp pack
         if: github.event_name == 'release'
 
       - name: Run Unit Tests
-        run: yarn run test:simple
+        run: vp run test
 
       - name: Package Extension
         id: packageExtension
@@ -85,7 +79,7 @@ jobs:
           dryRun: true
 
       - name: Upload Extension Package as Artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.os }}
           path: ${{ steps.packageExtension.outputs.vsixPath }}
@@ -99,8 +93,6 @@ jobs:
     permissions:
       contents: write
       security-events: write
-    strategy:
-      fail-fast: true
 
     steps:
       - name: Checkout Source
@@ -154,17 +146,13 @@ jobs:
         with:
           fetch-depth: 0 # Full history for better versioning
 
-      - name: Install Node v22
-        uses: actions/setup-node@v6
+      - uses: voidzero-dev/setup-vp@v1
         with:
-          node-version: 22
-          cache: "yarn"
-
-      - name: Install Dependencies
-        run: yarn install --immutable
+          node-version: ${{ matrix.node }}
+          cache: true
 
       - name: Download Build Artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ubuntu-latest
 
@@ -188,7 +176,7 @@ jobs:
           extensionFile: ${{ needs.build-lint-test.outputs.vsixPath }}
 
       - name: GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           generate_release_notes: false
           name: ${{ github.ref_name }}
