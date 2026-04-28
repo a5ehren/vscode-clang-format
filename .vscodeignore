@@ -1,8 +1,12 @@
 .vscode/**
 .vscode-test/**
+.vite-hooks/**
 out/**
 node_modules/**
 src/**
+.node-version
+.node_version
+AGENTS.md
 .gitignore
 esbuild.js
 vsc-extension-quickstart.md
@@ -33,6 +37,7 @@ SECURITY.md
 **/*.jpg
 **/*.ico
 pnpm-lock.yaml
+pnpm-workspace.yaml
 package-lock.json
 npm-debug.log
 .clang-format

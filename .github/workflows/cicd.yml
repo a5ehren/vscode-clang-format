@@ -97,7 +97,7 @@ jobs:
 
     steps:
       - name: Checkout Source
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ vars.YOUR_GITHUB_APP_ID }}
