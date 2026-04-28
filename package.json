@@ -1,6 +1,6 @@
 {
-  "name": "clang-format-2025",
-  "displayName": "Active Clang",
+  "name": "active-clang-format",
+  "displayName": "Active Clang Format",
   "version": "2.1.0",
   "description": "Maintained fork of the clang-format extension",
   "categories": [
