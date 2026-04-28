@@ -69,7 +69,7 @@ jobs:
         if: github.event_name == 'release'
 
       - name: Run Unit Tests
-        run: vp run test
+        run: vp test
 
       - name: Package Extension
         id: packageExtension
