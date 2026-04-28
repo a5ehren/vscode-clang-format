@@ -1,61 +1,62 @@
 {
   "name": "clang-format-2025",
   "displayName": "Clang-Format 2025",
-  "description": "Use Clang-Format in Visual Studio Code",
   "version": "2.0.9",
-  "publisher": "ebextensions",
-  "engines": {
-    "vscode": "^1.99.0"
-  },
-  "galleryBanner": {
-    "color": "#005577",
-    "theme": "dark"
-  },
-  "dependencies": {
-    "@types/which": "^3.0.4",
-    "sax": "^1.4.3",
-    "which": "^6.0.0"
-  },
+  "description": "Use Clang-Format in Visual Studio Code",
   "categories": [
     "Formatters"
   ],
   "keywords": [
     "C++",
-    "JavaScript",
-    "Objective-C",
-    "Clang",
-    "LLVM",
-    "Protobuf",
     "CUDA",
-    "TableGen",
+    "Clang",
+    "JavaScript",
+    "LLVM",
     "Metal",
-    "Verilog",
-    "SystemVerilog"
+    "Objective-C",
+    "Protobuf",
+    "SystemVerilog",
+    "TableGen",
+    "Verilog"
   ],
-  "activationEvents": [
-    "onLanguage:cpp",
-    "onLanguage:c",
-    "onLanguage:csharp",
-    "onLanguage:objective-c",
-    "onLanguage:objective-cpp",
-    "onLanguage:java",
-    "onLanguage:javascript",
-    "onLanguage:json",
-    "onLanguage:typescript",
-    "onLanguage:proto",
-    "onLanguage:proto3",
-    "onLanguage:textproto",
-    "onLanguage:apex",
-    "onLanguage:glsl",
-    "onLanguage:hlsl",
-    "onLanguage:cuda",
-    "onLanguage:cuda-cpp",
-    "onLanguage:tablegen",
-    "onLanguage:metal",
-    "onLanguage:verilog",
-    "onLanguage:systemverilog"
-  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/a5ehren/vscode-clang-format"
+  },
+  "publisher": "ebextensions",
   "main": "./dist/extension.js",
+  "scripts": {
+    "vscode:prepublish": "vp pack",
+    "check": "vp check",
+    "compile": "vp build",
+    "test": "vscode-test",
+    "prepare": "vp config",
+    "format-write": "vp fmt --write src/**/*.ts"
+  },
+  "dependencies": {
+    "@types/which": "^3.0.4",
+    "sax": "^1.6.0",
+    "which": "^6.0.1"
+  },
+  "devDependencies": {
+    "@tsconfig/node22": "^22.0.5",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22",
+    "@types/sax": "^1.2.7",
+    "@types/vscode": "^1.100.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.9.1",
+    "npm-run-all": "^4.1.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "vite-plus": "latest"
+  },
+  "resolutions": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+  },
   "contributes": {
     "configuration": {
       "type": "object",
@@ -446,55 +447,36 @@
       }
     }
   },
-  "scripts": {
-    "vscode:prepublish": "npm run package",
-    "compile": "npm run check-types && npm run eslint && node esbuild.js",
-    "watch": "npm-run-all -p watch:*",
-    "watch:esbuild": "node esbuild.js --watch",
-    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-    "package": "npm run check-types && npm run eslint && node esbuild.js --production",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run eslint",
-    "check-types": "tsc --noEmit",
-    "eslint": "eslint --ext .js,.ts ./src",
-    "eslint-fix": "eslint --fix --ext .js,.ts ./src",
-    "eslint-check": "eslint --print-config ./src/extension.ts && eslint-config-prettier ./src/extension.ts",
-    "test": "vscode-test",
-    "test:simple": "ts-node src/test-extension.ts",
-    "test:simple:js": "node src/test-extension.js",
-    "generate-config": "ts-node src/scripts/generate-language-config.ts",
-    "prepare": "npm run generate-config && npm run package",
-    "prettier-write": "prettier --write src/**/*.ts"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.39.2",
-    "@tsconfig/node20": "^20.1.8",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "^20.19.27",
-    "@types/sax": "^1.2.7",
-    "@types/vscode": "~1.99.1",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2",
-    "@vscode/vsce": "^3.7.1",
-    "esbuild": "^0.27.2",
-    "eslint": "^9.39.2",
-    "eslint-config-prettier": "^10.1.8",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^3.7.4",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.50.1"
-  },
+  "activationEvents": [
+    "onLanguage:apex",
+    "onLanguage:c",
+    "onLanguage:cpp",
+    "onLanguage:csharp",
+    "onLanguage:cuda",
+    "onLanguage:cuda-cpp",
+    "onLanguage:glsl",
+    "onLanguage:hlsl",
+    "onLanguage:java",
+    "onLanguage:javascript",
+    "onLanguage:json",
+    "onLanguage:metal",
+    "onLanguage:objective-c",
+    "onLanguage:objective-cpp",
+    "onLanguage:proto",
+    "onLanguage:proto3",
+    "onLanguage:systemverilog",
+    "onLanguage:tablegen",
+    "onLanguage:textproto",
+    "onLanguage:typescript",
+    "onLanguage:verilog"
+  ],
   "icon": "clang-format.png",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/a5ehren/vscode-clang-format"
+  "galleryBanner": {
+    "color": "#005577",
+    "theme": "dark"
   },
-  "license": "MIT",
-  "packageManager": "yarn@^4.12.0",
-  "volta": {
-    "node": "20.19.6",
-    "yarn": "4.12.0"
-  }
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "packageManager": "yarn@4.14.1"
 }
