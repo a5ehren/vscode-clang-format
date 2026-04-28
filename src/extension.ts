@@ -51,7 +51,7 @@ function getBinPath(binname: string): string {
       if (statSync(binPathCache[binname]).isFile()) {
         return binPathCache[binname];
       }
-    } catch (_) {
+    } catch {
       // Cache is invalid, remove it
       binPathCache[binname] = undefined;
     }
@@ -75,8 +75,7 @@ function getBinPath(binname: string): string {
         }
       } catch (statError: unknown) {
         // Path exists but stat failed, log warning but continue
-        const statErrorMessage =
-          statError instanceof Error ? statError.message : String(statError);
+        const statErrorMessage = statError instanceof Error ? statError.message : String(statError);
         outputChannel.appendLine(
           `Warning: Could not stat binary at ${normalizedPath}: ${statErrorMessage}`,
         );
@@ -91,18 +90,14 @@ function getBinPath(binname: string): string {
     // If which fails, return the binary name as-is
     // This maintains compatibility with the old behavior
     const errorMessage = error instanceof Error ? error.message : String(error);
-    outputChannel.appendLine(
-      `Could not find binary '${binname}' in PATH: ${errorMessage}`,
-    );
+    outputChannel.appendLine(`Could not find binary '${binname}' in PATH: ${errorMessage}`);
     binPathCache[binname] = binname;
     return binname;
   }
 }
 
 export class ClangDocumentFormattingEditProvider
-  implements
-    vscode.DocumentFormattingEditProvider,
-    vscode.DocumentRangeFormattingEditProvider
+  implements vscode.DocumentFormattingEditProvider, vscode.DocumentRangeFormattingEditProvider
 {
   private readonly defaultConfigure: ClangFormatConfig = {
     executable: "clang-format",
@@ -152,11 +147,7 @@ export class ClangDocumentFormattingEditProvider
 
       // Create a reusable buffer for UTF-8 calculations
       const textEncoder = new TextEncoder();
-      const getUtf8Length = (
-        str: string,
-        start: number,
-        len: number,
-      ): number => {
+      const getUtf8Length = (str: string, start: number, len: number): number => {
         return textEncoder.encode(str.substring(start, start + len)).length;
       };
 
@@ -206,9 +197,7 @@ export class ClangDocumentFormattingEditProvider
             const offset = tag.attributes.offset;
 
             if (typeof length !== "string" || typeof offset !== "string") {
-              handleError(
-                new Error("Malformed XML: missing required attributes"),
-              );
+              handleError(new Error("Malformed XML: missing required attributes"));
               return;
             }
 
@@ -240,14 +229,11 @@ export class ClangDocumentFormattingEditProvider
 
         try {
           const start = document.positionAt(currentEdit.offset);
-          const end = document.positionAt(
-            currentEdit.offset + currentEdit.length,
-          );
+          const end = document.positionAt(currentEdit.offset + currentEdit.length);
           const editRange = new vscode.Range(start, end);
           edits.push(new vscode.TextEdit(editRange, currentEdit.text));
         } catch (error: unknown) {
-          const errorMessage =
-            error instanceof Error ? error.message : "unknown error";
+          const errorMessage = error instanceof Error ? error.message : "unknown error";
           handleError(new Error(`Failed to create edit: ${errorMessage}`));
           return;
         }
@@ -274,8 +260,7 @@ export class ClangDocumentFormattingEditProvider
         }
         parser.end();
       } catch (error: unknown) {
-        const errorMessage =
-          error instanceof Error ? error.message : "unknown error";
+        const errorMessage = error instanceof Error ? error.message : "unknown error";
         handleError(new Error(`XML processing error: ${errorMessage}`));
       }
     });
@@ -285,10 +270,7 @@ export class ClangDocumentFormattingEditProvider
   /// If configure has changed, it will get the new value
   private getExecutablePath(document?: vscode.TextDocument) {
     const platform = getPlatformString();
-    const config = vscode.workspace.getConfiguration(
-      "clang-format",
-      document?.uri,
-    );
+    const config = vscode.workspace.getConfiguration("clang-format", document?.uri);
 
     const platformExecPath = config.get<string>("executable." + platform);
     const defaultExecPath = config.get<string>("executable");
@@ -305,9 +287,7 @@ export class ClangDocumentFormattingEditProvider
       .replace(/\${cwd}/g, process.cwd())
       .replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
         if (!/^[a-z_]\w*$/i.test(envName)) {
-          outputChannel.appendLine(
-            `Warning: Invalid environment variable name: ${envName}`,
-          );
+          outputChannel.appendLine(`Warning: Invalid environment variable name: ${envName}`);
           return "";
         }
         return process.env[envName] ?? "";
@@ -317,18 +297,13 @@ export class ClangDocumentFormattingEditProvider
   private getLanguage(document: vscode.TextDocument): string {
     const langId = document.languageId;
     const mappedLang = (ALIAS as Record<string, string>)[langId] || langId;
-    outputChannel.appendLine(
-      `Document language ID: ${langId}, mapped to: ${mappedLang}`,
-    );
+    outputChannel.appendLine(`Document language ID: ${langId}, mapped to: ${mappedLang}`);
     return mappedLang;
   }
 
   private getStyle(document: vscode.TextDocument) {
     const language = this.getLanguage(document);
-    const config = vscode.workspace.getConfiguration(
-      "clang-format",
-      document.uri,
-    );
+    const config = vscode.workspace.getConfiguration("clang-format", document.uri);
 
     // Get language-specific style with document URI
     const languageStyleKey = `language.${language}.style`;
@@ -341,9 +316,7 @@ export class ClangDocumentFormattingEditProvider
       .replace(/\${cwd}/g, process.cwd())
       .replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
         if (!/^[a-z_]\w*$/i.test(envName)) {
-          outputChannel.appendLine(
-            `Warning: Invalid environment variable name: ${envName}`,
-          );
+          outputChannel.appendLine(`Warning: Invalid environment variable name: ${envName}`);
           return "";
         }
         return process.env[envName] ?? "";
@@ -361,9 +334,7 @@ export class ClangDocumentFormattingEditProvider
       .replace(/\${cwd}/g, process.cwd())
       .replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
         if (!/^[a-z_]\w*$/i.test(envName)) {
-          outputChannel.appendLine(
-            `Warning: Invalid environment variable name: ${envName}`,
-          );
+          outputChannel.appendLine(`Warning: Invalid environment variable name: ${envName}`);
           return "";
         }
         return process.env[envName] ?? "";
@@ -375,13 +346,8 @@ export class ClangDocumentFormattingEditProvider
 
   private getFallbackStyle(document: vscode.TextDocument) {
     // Get language-specific fallback style with document URI
-    const config = vscode.workspace.getConfiguration(
-      "clang-format",
-      document.uri,
-    );
-    let strConf = config.get<string>(
-      `language.${this.getLanguage(document)}.fallbackStyle`,
-    );
+    const config = vscode.workspace.getConfiguration("clang-format", document.uri);
+    let strConf = config.get<string>(`language.${this.getLanguage(document)}.fallbackStyle`);
     if (strConf?.trim()) {
       return strConf;
     }
@@ -397,10 +363,7 @@ export class ClangDocumentFormattingEditProvider
   }
 
   private getAssumedFilename(document: vscode.TextDocument) {
-    const config = vscode.workspace.getConfiguration(
-      "clang-format",
-      document.uri,
-    );
+    const config = vscode.workspace.getConfiguration("clang-format", document.uri);
     const assumedFilename = config.get<string>("assumeFilename") ?? "";
     if (assumedFilename === "") {
       return document.fileName;
@@ -415,9 +378,7 @@ export class ClangDocumentFormattingEditProvider
       .replace(/\${fileExtname}/g, parsedPath.ext);
   }
 
-  private getWorkspaceFolder(
-    document?: vscode.TextDocument,
-  ): string | undefined {
+  private getWorkspaceFolder(document?: vscode.TextDocument): string | undefined {
     if (document) {
       const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
       if (workspaceFolder) {
@@ -426,20 +387,14 @@ export class ClangDocumentFormattingEditProvider
     }
 
     // Fallback to first workspace folder if no document is provided
-    if (
-      vscode.workspace.workspaceFolders &&
-      vscode.workspace.workspaceFolders.length > 0
-    ) {
+    if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
       return vscode.workspace.workspaceFolders[0].uri.fsPath;
     }
 
     return undefined;
   }
 
-  private getFormatArgs(
-    document: vscode.TextDocument,
-    range: vscode.Range | undefined,
-  ): string[] {
+  private getFormatArgs(document: vscode.TextDocument, range: vscode.Range | undefined): string[] {
     // Validate and sanitize style parameters
     let style = this.getStyle(document);
     let fallbackStyle = this.getFallbackStyle(document);
@@ -463,9 +418,7 @@ export class ClangDocumentFormattingEditProvider
       !normalizedStyle.startsWith("{") &&
       !normalizedStyle.endsWith("}")
     ) {
-      outputChannel.appendLine(
-        `Warning: Invalid style value "${style}", falling back to "file"`,
-      );
+      outputChannel.appendLine(`Warning: Invalid style value "${style}", falling back to "file"`);
       style = "file";
     }
 
@@ -507,16 +460,9 @@ export class ClangDocumentFormattingEditProvider
       "utf8",
     );
     // fix character offset to byte offset
-    const byteOffset = Buffer.byteLength(
-      document.getText().substring(0, offset),
-      "utf8",
-    );
+    const byteOffset = Buffer.byteLength(document.getText().substring(0, offset), "utf8");
 
-    return [
-      ...baseArgs,
-      `-offset=${String(byteOffset)}`,
-      `-length=${String(byteLength)}`,
-    ];
+    return [...baseArgs, `-offset=${String(byteOffset)}`, `-length=${String(byteLength)}`];
   }
 
   private doFormatDocument(
@@ -530,12 +476,8 @@ export class ClangDocumentFormattingEditProvider
       let child: cp.ChildProcess | undefined;
       const timeoutId = setTimeout(() => {
         cleanup();
-        const timeoutError = new Error(
-          "Format operation timed out after 10 seconds",
-        );
-        outputChannel.appendLine(
-          `Formatting timed out after 10s for file: ${document.fileName}`,
-        );
+        const timeoutError = new Error("Format operation timed out after 10 seconds");
+        outputChannel.appendLine(`Formatting timed out after 10s for file: ${document.fileName}`);
         reject(timeoutError);
       }, 10000);
 
@@ -588,9 +530,7 @@ export class ClangDocumentFormattingEditProvider
 
         child.on("error", (err: Error) => {
           cleanup();
-          outputChannel.appendLine(
-            `Error spawning clang-format: ${err.message}`,
-          );
+          outputChannel.appendLine(`Error spawning clang-format: ${err.message}`);
           reject(err);
         });
 
@@ -598,15 +538,9 @@ export class ClangDocumentFormattingEditProvider
           cleanup();
 
           if (code !== 0) {
-            outputChannel.appendLine(
-              `clang-format exited with code ${String(code)}`,
-            );
+            outputChannel.appendLine(`clang-format exited with code ${String(code)}`);
             outputChannel.appendLine(`stderr: ${stderr}`);
-            reject(
-              new Error(
-                `clang-format exited with code ${String(code)}: ${stderr}`,
-              ),
-            );
+            reject(new Error(`clang-format exited with code ${String(code)}: ${stderr}`));
             return;
           }
 
@@ -633,26 +567,19 @@ export class ClangDocumentFormattingEditProvider
         // Handle cancellation
         token.onCancellationRequested(() => {
           cleanup();
-          outputChannel.appendLine(
-            `Formatting cancelled for file: ${document.fileName}`,
-          );
+          outputChannel.appendLine(`Formatting cancelled for file: ${document.fileName}`);
           reject(new Error("Format cancelled"));
         });
       } catch (err: unknown) {
         cleanup();
-        const errorMessage =
-          err instanceof Error ? err.message : "unknown error";
+        const errorMessage = err instanceof Error ? err.message : "unknown error";
         outputChannel.appendLine(`Error during formatting: ${errorMessage}`);
-        reject(
-          new Error(`Error during formatting: ${errorMessage}`, { cause: err }),
-        );
+        reject(new Error(`Error during formatting: ${errorMessage}`, { cause: err }));
       }
     });
   }
 
-  public formatDocument(
-    document: vscode.TextDocument,
-  ): Promise<vscode.TextEdit[]> {
+  public formatDocument(document: vscode.TextDocument): Promise<vscode.TextEdit[]> {
     const fullRange = new vscode.Range(
       document.positionAt(0),
       document.positionAt(document.getText().length),
@@ -664,8 +591,7 @@ export class ClangDocumentFormattingEditProvider
 
 export function activate(ctx: vscode.ExtensionContext): void {
   // Initialize diagnostic collection
-  diagnosticCollection =
-    vscode.languages.createDiagnosticCollection("clang-format");
+  diagnosticCollection = vscode.languages.createDiagnosticCollection("clang-format");
   ctx.subscriptions.push(diagnosticCollection);
   ctx.subscriptions.push(outputChannel);
 
@@ -675,14 +601,8 @@ export function activate(ctx: vscode.ExtensionContext): void {
   for (const mode of MODES) {
     if (typeof mode.language === "string") {
       ctx.subscriptions.push(
-        vscode.languages.registerDocumentRangeFormattingEditProvider(
-          mode,
-          formatter,
-        ),
-        vscode.languages.registerDocumentFormattingEditProvider(
-          mode,
-          formatter,
-        ),
+        vscode.languages.registerDocumentRangeFormattingEditProvider(mode, formatter),
+        vscode.languages.registerDocumentFormattingEditProvider(mode, formatter),
       );
       availableLanguages.add(mode.language);
     }

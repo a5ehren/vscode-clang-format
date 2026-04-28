@@ -123,8 +123,7 @@ function test(name: string, testFn: () => boolean | void) {
 function expect(actual: unknown) {
   return {
     toBe: (expected: unknown) => actual === expected,
-    toContain: (expected: string) =>
-      typeof actual === "string" && actual.includes(expected),
+    toContain: (expected: string) => typeof actual === "string" && actual.includes(expected),
     toBeTruthy: () => !!actual,
     toBeFalsy: () => !actual,
     toBeInstanceOf: (constructor: new (...args: unknown[]) => unknown) =>
@@ -162,13 +161,12 @@ function testGetBinPathBasic() {
 
   // Test fallback behavior
   total++;
-  passed +=
-    test("getBinPath should fallback to binary name if not found", () => {
-      const result = getBinPath("nonexistent");
-      return expect(result).toBe("nonexistent");
-    })
-      ? 1
-      : 0;
+  passed += test("getBinPath should fallback to binary name if not found", () => {
+    const result = getBinPath("nonexistent");
+    return expect(result).toBe("nonexistent");
+  })
+    ? 1
+    : 0;
 
   console.log(`Basic tests: ${passed}/${total} passed\n`);
   return passed === total;
@@ -185,8 +183,7 @@ function testGetBinPathWithSpaces() {
   passed += test("getBinPath should handle paths with spaces", () => {
     const result = getBinPath("clang-format-spaces");
     return (
-      expect(result).toContain("Program Files") &&
-      expect(result).toContain("clang-format.exe")
+      expect(result).toContain("Program Files") && expect(result).toContain("clang-format.exe")
     );
   })
     ? 1
@@ -213,16 +210,14 @@ function testGetBinPathWithSpecialCharacters() {
 
   // Test paths with ampersands and special symbols
   total++;
-  passed +=
-    test("getBinPath should handle ampersands and special symbols", () => {
-      const result = getBinPath("clang-format-special");
-      return (
-        expect(result).toContain("Documents & Files") &&
-        expect(result).toContain("clang-format.exe")
-      );
-    })
-      ? 1
-      : 0;
+  passed += test("getBinPath should handle ampersands and special symbols", () => {
+    const result = getBinPath("clang-format-special");
+    return (
+      expect(result).toContain("Documents & Files") && expect(result).toContain("clang-format.exe")
+    );
+  })
+    ? 1
+    : 0;
 
   // Test Unicode characters (non-ASCII)
   total++;
@@ -235,25 +230,18 @@ function testGetBinPathWithSpecialCharacters() {
 
   // Test at symbols and special characters
   total++;
-  passed +=
-    test("getBinPath should handle at symbols and special characters", () => {
-      const result = getBinPath("clang-format-symbols");
-      return (
-        expect(result).toContain("@latest") &&
-        expect(result).toContain("clang-format")
-      );
-    })
-      ? 1
-      : 0;
+  passed += test("getBinPath should handle at symbols and special characters", () => {
+    const result = getBinPath("clang-format-symbols");
+    return expect(result).toContain("@latest") && expect(result).toContain("clang-format");
+  })
+    ? 1
+    : 0;
 
   // Test multiple dots in filenames
   total++;
   passed += test("getBinPath should handle multiple dots in filenames", () => {
     const result = getBinPath("clang-format-dots");
-    return (
-      expect(result).toContain("clang-format.1.0.0") &&
-      expect(result).toContain("bin")
-    );
+    return expect(result).toContain("clang-format.1.0.0") && expect(result).toContain("bin");
   })
     ? 1
     : 0;
@@ -262,10 +250,7 @@ function testGetBinPathWithSpecialCharacters() {
   total++;
   passed += test("getBinPath should handle square brackets in paths", () => {
     const result = getBinPath("clang-format-brackets");
-    return (
-      expect(result).toContain("[clang-format]") &&
-      expect(result).toContain("bin")
-    );
+    return expect(result).toContain("[clang-format]") && expect(result).toContain("bin");
   })
     ? 1
     : 0;
@@ -274,10 +259,7 @@ function testGetBinPathWithSpecialCharacters() {
   total++;
   passed += test("getBinPath should handle quotes in paths", () => {
     const result = getBinPath("clang-format-quotes");
-    return (
-      expect(result).toContain('"Clang Format"') &&
-      expect(result).toContain("bin")
-    );
+    return expect(result).toContain('"Clang Format"') && expect(result).toContain("bin");
   })
     ? 1
     : 0;
@@ -287,8 +269,7 @@ function testGetBinPathWithSpecialCharacters() {
   passed += test("getBinPath should handle mixed special characters", () => {
     const result = getBinPath("clang-format-mixed");
     return (
-      expect(result).toContain("My Projects (v2.0)") &&
-      expect(result).toContain("clang-format")
+      expect(result).toContain("My Projects (v2.0)") && expect(result).toContain("clang-format")
     );
   })
     ? 1
@@ -298,10 +279,7 @@ function testGetBinPathWithSpecialCharacters() {
   total++;
   passed += test("getBinPath should handle multiple backslashes", () => {
     const result = getBinPath("clang-format-backslashes");
-    return (
-      expect(result).toContain("AppData") &&
-      expect(result).toContain("clang-format.exe")
-    );
+    return expect(result).toContain("AppData") && expect(result).toContain("clang-format.exe");
   })
     ? 1
     : 0;
@@ -310,10 +288,7 @@ function testGetBinPathWithSpecialCharacters() {
   total++;
   passed += test("getBinPath should handle forward slashes on Windows", () => {
     const result = getBinPath("clang-format-forward-slashes");
-    return (
-      expect(result).toContain("AppData") &&
-      expect(result).toContain("clang-format.exe")
-    );
+    return expect(result).toContain("AppData") && expect(result).toContain("clang-format.exe");
   })
     ? 1
     : 0;
@@ -322,35 +297,25 @@ function testGetBinPathWithSpecialCharacters() {
   total++;
   passed += test("getBinPath should handle mixed slash types", () => {
     const result = getBinPath("clang-format-mixed-slashes");
-    return (
-      expect(result).toContain("AppData") &&
-      expect(result).toContain("clang-format.exe")
-    );
+    return expect(result).toContain("AppData") && expect(result).toContain("clang-format.exe");
   })
     ? 1
     : 0;
 
   // Test underscores and version numbers
   total++;
-  passed +=
-    test("getBinPath should handle underscores and version numbers", () => {
-      const result = getBinPath("clang-format-underscores");
-      return (
-        expect(result).toContain("clang_format_v2.0.1") &&
-        expect(result).toContain("bin")
-      );
-    })
-      ? 1
-      : 0;
+  passed += test("getBinPath should handle underscores and version numbers", () => {
+    const result = getBinPath("clang-format-underscores");
+    return expect(result).toContain("clang_format_v2.0.1") && expect(result).toContain("bin");
+  })
+    ? 1
+    : 0;
 
   // Test hyphens in paths
   total++;
   passed += test("getBinPath should handle hyphens in paths", () => {
     const result = getBinPath("clang-format-hyphens");
-    return (
-      expect(result).toContain("clang-format-tool") &&
-      expect(result).toContain("bin")
-    );
+    return expect(result).toContain("clang-format-tool") && expect(result).toContain("bin");
   })
     ? 1
     : 0;
@@ -359,10 +324,7 @@ function testGetBinPathWithSpecialCharacters() {
   total++;
   passed += test("getBinPath should handle plus signs in names", () => {
     const result = getBinPath("clang-format-plus");
-    return (
-      expect(result).toContain("clang+format") &&
-      expect(result).toContain("bin")
-    );
+    return expect(result).toContain("clang+format") && expect(result).toContain("bin");
   })
     ? 1
     : 0;
@@ -371,10 +333,7 @@ function testGetBinPathWithSpecialCharacters() {
   total++;
   passed += test("getBinPath should handle hash symbols", () => {
     const result = getBinPath("clang-format-hash");
-    return (
-      expect(result).toContain("clang#format") &&
-      expect(result).toContain("bin")
-    );
+    return expect(result).toContain("clang#format") && expect(result).toContain("bin");
   })
     ? 1
     : 0;
@@ -383,10 +342,7 @@ function testGetBinPathWithSpecialCharacters() {
   total++;
   passed += test("getBinPath should handle dollar signs", () => {
     const result = getBinPath("clang-format-dollar");
-    return (
-      expect(result).toContain("$clang-format") &&
-      expect(result).toContain("bin")
-    );
+    return expect(result).toContain("$clang-format") && expect(result).toContain("bin");
   })
     ? 1
     : 0;
@@ -395,10 +351,7 @@ function testGetBinPathWithSpecialCharacters() {
   total++;
   passed += test("getBinPath should handle percent signs", () => {
     const result = getBinPath("clang-format-percent");
-    return (
-      expect(result).toContain("100%clang-format") &&
-      expect(result).toContain("bin")
-    );
+    return expect(result).toContain("100%clang-format") && expect(result).toContain("bin");
   })
     ? 1
     : 0;
@@ -415,25 +368,23 @@ function testGetBinPathPathNormalization() {
 
   // Test paths with multiple consecutive slashes
   total++;
-  passed +=
-    test("getBinPath should normalize multiple consecutive slashes", () => {
-      const result = getBinPath("clang-format-backslashes");
-      // Should handle multiple backslashes without issues
-      return expect(result).toBeTruthy() && typeof result === "string";
-    })
-      ? 1
-      : 0;
+  passed += test("getBinPath should normalize multiple consecutive slashes", () => {
+    const result = getBinPath("clang-format-backslashes");
+    // Should handle multiple backslashes without issues
+    return expect(result).toBeTruthy() && typeof result === "string";
+  })
+    ? 1
+    : 0;
 
   // Test paths with mixed slash types
   total++;
-  passed +=
-    test("getBinPath should handle mixed slash types gracefully", () => {
-      const result = getBinPath("clang-format-mixed-slashes");
-      // Should handle mixed backslashes and forward slashes
-      return expect(result).toBeTruthy() && typeof result === "string";
-    })
-      ? 1
-      : 0;
+  passed += test("getBinPath should handle mixed slash types gracefully", () => {
+    const result = getBinPath("clang-format-mixed-slashes");
+    // Should handle mixed backslashes and forward slashes
+    return expect(result).toBeTruthy() && typeof result === "string";
+  })
+    ? 1
+    : 0;
 
   // Test paths with special characters that might interfere with path parsing
   total++;
@@ -458,25 +409,23 @@ function testGetBinPathPathNormalization() {
 
   // Test paths with characters that might cause encoding issues
   total++;
-  passed +=
-    test("getBinPath should handle characters that might cause encoding issues", () => {
-      const result = getBinPath("clang-format-unicode");
-      // Should handle Unicode characters without encoding issues
-      return expect(result).toBeTruthy() && typeof result === "string";
-    })
-      ? 1
-      : 0;
+  passed += test("getBinPath should handle characters that might cause encoding issues", () => {
+    const result = getBinPath("clang-format-unicode");
+    // Should handle Unicode characters without encoding issues
+    return expect(result).toBeTruthy() && typeof result === "string";
+  })
+    ? 1
+    : 0;
 
   // Test paths with characters that might cause regex issues
   total++;
-  passed +=
-    test("getBinPath should handle characters that might cause regex issues", () => {
-      const result = getBinPath("clang-format-brackets");
-      // Should handle square brackets without regex interpretation issues
-      return expect(result).toBeTruthy() && typeof result === "string";
-    })
-      ? 1
-      : 0;
+  passed += test("getBinPath should handle characters that might cause regex issues", () => {
+    const result = getBinPath("clang-format-brackets");
+    // Should handle square brackets without regex interpretation issues
+    return expect(result).toBeTruthy() && typeof result === "string";
+  })
+    ? 1
+    : 0;
 
   console.log(`Path normalization tests: ${passed}/${total} passed\n`);
   return passed === total;
@@ -551,11 +500,8 @@ function getBinPath(binname: string): string {
           return normalizedPath;
         }
       } catch (statError: unknown) {
-        const statErrorMessage =
-          statError instanceof Error ? statError.message : String(statError);
-        console.log(
-          `Warning: Could not stat binary at ${normalizedPath}: ${statErrorMessage}`,
-        );
+        const statErrorMessage = statError instanceof Error ? statError.message : String(statError);
+        console.log(`Warning: Could not stat binary at ${normalizedPath}: ${statErrorMessage}`);
         return normalizedPath;
       }
     }

@@ -1,11 +1,7 @@
 "use strict";
 
 import * as vscode from "vscode";
-import {
-  SupportedLanguage,
-  SUPPORTED_LANGUAGES,
-  ALIAS,
-} from "./shared/languageConfig";
+import { SupportedLanguage, SUPPORTED_LANGUAGES, ALIAS } from "./shared/languageConfig";
 
 let languages: SupportedLanguage[] = [];
 let MODES: readonly vscode.DocumentFilter[] = [];
@@ -14,9 +10,7 @@ function updateLanguages(): void {
   languages = [];
   for (const lang of SUPPORTED_LANGUAGES) {
     const confKey = `language.${ALIAS[lang] ?? lang}.enable`;
-    if (
-      vscode.workspace.getConfiguration("clang-format").get<boolean>(confKey)
-    ) {
+    if (vscode.workspace.getConfiguration("clang-format").get<boolean>(confKey)) {
       languages.push(lang);
     }
   }
@@ -32,12 +26,10 @@ function updateLanguages(): void {
 updateLanguages();
 
 // Listen for configuration changes
-vscode.workspace.onDidChangeConfiguration(
-  (event: vscode.ConfigurationChangeEvent): void => {
-    if (event.affectsConfiguration("clang-format")) {
-      updateLanguages();
-    }
-  },
-);
+vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent): void => {
+  if (event.affectsConfiguration("clang-format")) {
+    updateLanguages();
+  }
+});
 
 export { MODES };

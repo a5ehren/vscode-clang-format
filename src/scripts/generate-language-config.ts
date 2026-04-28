@@ -18,9 +18,7 @@ interface PackageJson {
   };
 }
 
-function generateLanguageConfig(
-  lang: SupportedLanguage,
-): Record<string, unknown> {
+function generateLanguageConfig(lang: SupportedLanguage): Record<string, unknown> {
   const baseKey = `clang-format.language.${ALIAS[lang] ?? lang}`;
   const displayName = DISPLAY_NAMES[lang];
   const override: StyleOverride = STYLE_OVERRIDES[lang] ?? {};
@@ -55,17 +53,12 @@ function generateActivationEvents(): string[] {
 function main() {
   // Read the existing package.json
   const packageJsonPath = path.join(__dirname, "..", "..", "package.json");
-  const packageJson = JSON.parse(
-    fs.readFileSync(packageJsonPath, "utf8"),
-  ) as PackageJson;
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8")) as PackageJson;
 
   // Generate language configurations
-  const languageConfigs = SUPPORTED_LANGUAGES.reduce<Record<string, unknown>>(
-    (acc, lang) => {
-      return { ...acc, ...generateLanguageConfig(lang) };
-    },
-    {},
-  );
+  const languageConfigs = SUPPORTED_LANGUAGES.reduce<Record<string, unknown>>((acc, lang) => {
+    return { ...acc, ...generateLanguageConfig(lang) };
+  }, {});
 
   // Generate activation events
   packageJson.activationEvents = generateActivationEvents();
@@ -73,39 +66,23 @@ function main() {
   // Merge with existing configuration properties
   packageJson.contributes.configuration.properties = {
     "clang-format.executable":
-      packageJson.contributes.configuration.properties[
-        "clang-format.executable"
-      ],
+      packageJson.contributes.configuration.properties["clang-format.executable"],
     "clang-format.executable.windows":
-      packageJson.contributes.configuration.properties[
-        "clang-format.executable.windows"
-      ],
+      packageJson.contributes.configuration.properties["clang-format.executable.windows"],
     "clang-format.executable.linux":
-      packageJson.contributes.configuration.properties[
-        "clang-format.executable.linux"
-      ],
+      packageJson.contributes.configuration.properties["clang-format.executable.linux"],
     "clang-format.executable.osx":
-      packageJson.contributes.configuration.properties[
-        "clang-format.executable.osx"
-      ],
-    "clang-format.style":
-      packageJson.contributes.configuration.properties["clang-format.style"],
+      packageJson.contributes.configuration.properties["clang-format.executable.osx"],
+    "clang-format.style": packageJson.contributes.configuration.properties["clang-format.style"],
     "clang-format.fallbackStyle":
-      packageJson.contributes.configuration.properties[
-        "clang-format.fallbackStyle"
-      ],
+      packageJson.contributes.configuration.properties["clang-format.fallbackStyle"],
     ...languageConfigs,
     "clang-format.assumeFilename":
-      packageJson.contributes.configuration.properties[
-        "clang-format.assumeFilename"
-      ],
+      packageJson.contributes.configuration.properties["clang-format.assumeFilename"],
   };
 
   // Write back to package.json with consistent formatting
-  fs.writeFileSync(
-    packageJsonPath,
-    JSON.stringify(packageJson, null, 2) + "\n",
-  );
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + "\n");
 }
 
 main();

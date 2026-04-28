@@ -11,7 +11,7 @@ on:
     types:
       - published
   schedule:
-    - cron: '0 0 * * 1'  # Weekly security scan
+    - cron: "0 0 * * 1" # Weekly security scan
 
 permissions:
   contents: read
@@ -36,7 +36,7 @@ jobs:
           - macos-latest
           - windows-latest
         node:
-          - 20
+          - 22
 
     outputs:
       vsixPath: ${{ steps.packageExtension.outputs.vsixPath }}
@@ -51,20 +51,20 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0  # Full history for better versioning
+          fetch-depth: 0 # Full history for better versioning
 
       - name: Install Node ${{ matrix.node }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
-          cache: 'yarn'  # Enable yarn caching
+          cache: "yarn" # Enable yarn caching
 
       - name: Install Dependencies
         run: yarn install --immutable
-        
+
       - name: Run yarn audit
         run: yarn npm audit --environment production
-        continue-on-error: true  # Don't fail the build, but report issues
+        continue-on-error: true # Don't fail the build, but report issues
 
       - name: Build Code (Standard)
         run: yarn run compile
@@ -89,8 +89,8 @@ jobs:
         with:
           name: ${{ matrix.os }}
           path: ${{ steps.packageExtension.outputs.vsixPath }}
-          retention-days: 5  # Limit artifact retention
-  
+          retention-days: 5 # Limit artifact retention
+
   version-bump:
     name: Version Bump
     if: github.event_name == 'release'
@@ -112,14 +112,14 @@ jobs:
       - uses: actions/checkout@v6
         with:
           token: ${{ steps.app-token.outputs.token }}
-          fetch-depth: 0  # Full history for better versioning
+          fetch-depth: 0 # Full history for better versioning
           ref: "main"
-      
+
       - name: Validate CHANGELOG and package.json
         run: |
           # Extract version from release tag (e.g. v1.2.3 -> 1.2.3)
           VERSION=${GITHUB_REF#refs/tags/v}
-          
+
           # Check if version exists in CHANGELOG.md
           if ! grep -q "## \[${VERSION}\]" CHANGELOG.md; then
             echo "Error: Version ${VERSION} not found in CHANGELOG.md"
@@ -132,11 +132,10 @@ jobs:
             echo "Please update package.json with the latest version before creating a release"
             exit 1
           fi
-          
+
           echo "✓ CHANGELOG.md contains version ${VERSION}"
           echo "✓ package.json contains version ${VERSION}"
-        
-        
+
   publish:
     name: Publish Github Action
     needs:
@@ -148,39 +147,39 @@ jobs:
     permissions:
       contents: write
       packages: write
-    
+
     steps:
       - name: Checkout Source
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0  # Full history for better versioning
-      
-      - name: Install Node v20
+          fetch-depth: 0 # Full history for better versioning
+
+      - name: Install Node v22
         uses: actions/setup-node@v6
         with:
-          node-version: 20
-          cache: 'yarn'
+          node-version: 22
+          cache: "yarn"
 
       - name: Install Dependencies
         run: yarn install --immutable
-        
+
       - name: Download Build Artifact
         uses: actions/download-artifact@v7
         with:
           name: ubuntu-latest
-          
+
       - name: Verify Artifact Checksum
         run: |
           echo "Verifying artifact integrity..."
           sha256sum ${{ needs.build-lint-test.outputs.vsixPath }}
-         
+
       - name: Publish to Visual Studio Marketplace
         uses: HaaLeo/publish-vscode-extension@v2
         with:
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
           extensionFile: ${{ needs.build-lint-test.outputs.vsixPath }}
           registryUrl: https://marketplace.visualstudio.com
-          
+
       - name: Publish to Open VSX Registry
         uses: HaaLeo/publish-vscode-extension@v2
         id: publishToOpenVSX
@@ -213,11 +212,11 @@ jobs:
       - name: Delete Failed Release Tag
         run: |
           echo "Cleaning up failed release..."
-          
+
           # Delete the local tag
           git tag -d ${GITHUB_REF#refs/tags/}
-          
+
           # Delete the remote tag
           git push --delete origin ${GITHUB_REF#refs/tags/}
-          
+
           echo "✓ Cleaned up release tag ${GITHUB_REF#refs/tags/}"
