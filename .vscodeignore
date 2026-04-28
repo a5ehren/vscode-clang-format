@@ -4,7 +4,6 @@ out/**
 node_modules/**
 src/**
 .gitignore
-.yarnrc
 esbuild.js
 vsc-extension-quickstart.md
 **/tsconfig.json
@@ -33,11 +32,9 @@ SECURITY.md
 **/*.gif
 **/*.jpg
 **/*.ico
-yarn.lock
+pnpm-lock.yaml
 package-lock.json
 npm-debug.log
 .clang-format
 **/*.js.map
-.yarnrc.yml
 .devcontainer/**
-.yarn/**

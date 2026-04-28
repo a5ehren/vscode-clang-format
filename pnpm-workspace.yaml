@@ -1,0 +1,7 @@
+allowBuilds:
+  "@vscode/vsce-sign": true
+  keytar: true
+overrides:
+  diff@>=6.0.0 <8.0.3: ">=8.0.3"
+  serialize-javascript@<7.0.5: ">=7.0.5"
+  uuid@<14.0.0: ">=14.0.0"

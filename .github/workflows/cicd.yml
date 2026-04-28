@@ -75,6 +75,7 @@ jobs:
         id: packageExtension
         uses: HaaLeo/publish-vscode-extension@v2
         with:
+          dependencies: false
           pat: stub
           dryRun: true
 
@@ -164,6 +165,7 @@ jobs:
       - name: Publish to Visual Studio Marketplace
         uses: HaaLeo/publish-vscode-extension@v2
         with:
+          dependencies: false
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
           extensionFile: ${{ needs.build-lint-test.outputs.vsixPath }}
           registryUrl: https://marketplace.visualstudio.com
@@ -172,6 +174,7 @@ jobs:
         uses: HaaLeo/publish-vscode-extension@v2
         id: publishToOpenVSX
         with:
+          dependencies: false
           pat: ${{ secrets.OPEN_VSX_TOKEN }}
           extensionFile: ${{ needs.build-lint-test.outputs.vsixPath }}
 
