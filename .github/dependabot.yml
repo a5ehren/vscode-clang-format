@@ -10,7 +10,12 @@ updates:
     schedule:
       interval: "monthly"
     groups:
-      all-npm:
+      javascript-dependencies:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+      javascript-security-updates:
+        applies-to: "security-updates"
         patterns:
           - "*"
     versioning-strategy: "auto"
