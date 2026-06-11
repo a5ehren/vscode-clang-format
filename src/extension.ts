@@ -266,6 +266,22 @@ export class ClangDocumentFormattingEditProvider
     });
   }
 
+  /// Return the input string after replacing placeholders like ${workspaceFolder}
+  // and ${env:X}. The document parameter is used for finding the workspace folder
+  private doStringSubstitutions(input: string, document?: vscode.TextDocument): string {
+    return input
+      .replace(/\${workspaceRoot}/g, this.getWorkspaceFolder(document) ?? "")
+      .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder(document) ?? "")
+      .replace(/\${cwd}/g, process.cwd())
+      .replace(/\${env[.:]([^}]+)}/g, (sub: string, envName: string) => {
+        if (!/^[a-z_]\w*$/i.test(envName)) {
+          outputChannel.appendLine(`Warning: Invalid environment variable name: ${envName}`);
+          return "";
+        }
+        return process.env[envName] ?? "";
+      });
+  }
+
   /// Get execute name in clang-format.executable, if not found, use default value
   /// If configure has changed, it will get the new value
   private getExecutablePath(document?: vscode.TextDocument) {
@@ -281,17 +297,7 @@ export class ClangDocumentFormattingEditProvider
     }
 
     // replace placeholders, if present
-    return execPath
-      .replace(/\${workspaceRoot}/g, this.getWorkspaceFolder(document) ?? "")
-      .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder(document) ?? "")
-      .replace(/\${cwd}/g, process.cwd())
-      .replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
-        if (!/^[a-z_]\w*$/i.test(envName)) {
-          outputChannel.appendLine(`Warning: Invalid environment variable name: ${envName}`);
-          return "";
-        }
-        return process.env[envName] ?? "";
-      });
+    return this.doStringSubstitutions(execPath, document)
   }
 
   private getLanguage(document: vscode.TextDocument): string {
@@ -310,17 +316,7 @@ export class ClangDocumentFormattingEditProvider
 
     let ret = config.get<string>(languageStyleKey) ?? "";
 
-    ret = ret
-      .replace(/\${workspaceRoot}/g, this.getWorkspaceFolder(document) ?? "")
-      .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder(document) ?? "")
-      .replace(/\${cwd}/g, process.cwd())
-      .replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
-        if (!/^[a-z_]\w*$/i.test(envName)) {
-          outputChannel.appendLine(`Warning: Invalid environment variable name: ${envName}`);
-          return "";
-        }
-        return process.env[envName] ?? "";
-      });
+    ret = this.doStringSubstitutions(ret, document);
 
     if (ret.trim()) {
       return ret;
@@ -328,17 +324,7 @@ export class ClangDocumentFormattingEditProvider
 
     // Fallback to global style
     ret = config.get<string>("style") ?? "";
-    ret = ret
-      .replace(/\${workspaceRoot}/g, this.getWorkspaceFolder(document) ?? "")
-      .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder(document) ?? "")
-      .replace(/\${cwd}/g, process.cwd())
-      .replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
-        if (!/^[a-z_]\w*$/i.test(envName)) {
-          outputChannel.appendLine(`Warning: Invalid environment variable name: ${envName}`);
-          return "";
-        }
-        return process.env[envName] ?? "";
-      });
+    ret = this.doStringSubstitutions(ret, document);
 
     const finalStyle = ret.trim() ? ret : this.defaultConfigure.style;
     return finalStyle;

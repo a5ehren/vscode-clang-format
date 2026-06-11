@@ -48,13 +48,13 @@ The following placeholders are supported:
   workspace. In case of outside-workspace files `${workspaceFolder}` expands
   to the absolute path of the first available workspace.
 - `${cwd}` - replaced by the current working directory of vscode.
-- `${env.VAR}` - replaced by the environment variable $VAR, e.g. `${env.HOME}`will be replaced by`$HOME`, your home directory.
+- `${env:VAR}` - replaced by the environment variable $VAR, e.g. `${env:HOME}`will be replaced by`$HOME`, your home directory.
 
 Some examples:
 
 - `${workspaceRoot}/node_modules/.bin/clang-format` - specifies the version of
   clang that has been added to your workspace by `npm install clang-format`.
-- `${env.HOME}/tools/clang38/clang-format` - use a specific clang format version
+- `${env:HOME}/tools/clang38/clang-format` - use a specific clang format version
   under your home directory.
 
 Placeholders are also supported in `clang-format.assumeFilename`. The supported
