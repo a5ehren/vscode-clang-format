@@ -31,7 +31,7 @@ suite("Clang-Format formatter", () => {
   const originalConfig = new Map<string, unknown>();
 
   suiteSetup(async () => {
-    const extension = vscode.extensions.getExtension("ebextensions.clang-format-2025");
+    const extension = vscode.extensions.getExtension("ebextensions.active-clang-format");
     assert.ok(extension, "extension should be available in the test host");
     await extension.activate();
 

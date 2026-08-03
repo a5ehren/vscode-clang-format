@@ -14,7 +14,7 @@ TypeScript output goes to `out/`, and VS Code test downloads live in
 
 ## Build, Test, and Development Commands
 
-Use Node `22.22.2` from `.node-version` and pnpm `10.33.2` from the
+Use Node `24.15.0` from `.node-version` and pnpm `11.18.0` from the
 `packageManager` field. Run `corepack enable` once if the `pnpm` shim is not
 available.
 
