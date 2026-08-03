@@ -131,9 +131,6 @@ jobs:
 
       - run: vp install --frozen-lockfile
 
-      - name: Build Code (Release)
-        run: vp pack
-
       - name: Package Extension
         id: packageExtension
         run: |
@@ -148,7 +145,7 @@ jobs:
           # Retry logic for VS Marketplace rate limits (VSID Concurrency)
           for i in {1..3}; do
             echo "Attempt $i/3..."
-            if npx @vscode/vsce publish -p "${{ secrets.VS_MARKETPLACE_TOKEN }}" "$VSI_PATH"; then
+            if npx @vscode/vsce publish --no-dependencies --pat "${{ secrets.VS_MARKETPLACE_TOKEN }}" --packagePath "$VSI_PATH"; then
               echo "Successfully published to VS Marketplace"
               exit 0
             fi
@@ -167,7 +164,7 @@ jobs:
           # Retry logic for Open VSX transient failures
           for i in {1..3}; do
             echo "Attempt $i/3..."
-            if npx ovsx publish "$VSI_PATH" --pat "${{ secrets.OPEN_VSX_TOKEN }}"; then
+            if npx ovsx publish --no-dependencies --pat "${{ secrets.OPEN_VSX_TOKEN }}" --packagePath "$VSI_PATH"; then
               echo "Successfully published to Open VSX Registry"
               exit 0
             fi
