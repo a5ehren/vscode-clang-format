@@ -1,7 +1,7 @@
 {
   "name": "active-clang-format",
   "displayName": "Active Clang Format",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Maintained fork of the clang-format extension",
   "categories": [
     "Formatters"
@@ -37,18 +37,18 @@
   },
   "dependencies": {
     "@types/which": "^3.0.4",
-    "sax": "^1.6.0",
-    "which": "^6.0.1"
+    "sax": "^1.6.1",
+    "which": "^7.0.0"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.5",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^22.19.17",
+    "@types/node": "^24",
     "@types/sax": "^1.2.7",
-    "@types/vscode": "^1.100.0",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2",
-    "@vscode/vsce": "^3.9.1",
+    "@types/vscode": "^1.125.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.1.0",
+    "@vscode/vsce": "^3.9.2",
     "typescript": "^5.9.3",
     "vite-plus": "latest"
   },
@@ -475,7 +475,7 @@
     "theme": "dark"
   },
   "engines": {
-    "vscode": "^1.100.0"
+    "vscode": "^1.125.0"
   },
-  "packageManager": "pnpm@10.33.2+sha512.a90faf6feeab71ad6c6e57f94e0fe1a12f5dcc22cd754db40ae9593eb6a3e0b6b12e3540218bb37ae083404b1f2ce6db2a4121e979829b4aff94b99f49da1cf8"
+  "packageManager": "pnpm@11.18.0"
 }
