@@ -163,26 +163,38 @@ jobs:
           sha256sum ${{ needs.build-lint-test.outputs.vsixPath }}
 
       - name: Publish to Visual Studio Marketplace
-        uses: HaaLeo/publish-vscode-extension@v2
-        with:
-          dependencies: false
-          pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
-          extensionFile: ${{ needs.build-lint-test.outputs.vsixPath }}
-          registryUrl: https://marketplace.visualstudio.com
-          # Retry on rate limits (VSID Concurrency limit)
-          retry: 3
-          retryWait: 30000
+        run: |
+          # Retry logic for VS Marketplace rate limits (VSID Concurrency)
+          for i in {1..3}; do
+            echo "Attempt $i/3..."
+            if npx @vscode/vsce publish -p "${{ secrets.VS_MARKETPLACE_TOKEN }}" ${{ needs.build-lint-test.outputs.vsixPath }}; then
+              echo "Successfully published to VS Marketplace"
+              exit 0
+            fi
+            echo "Attempt $i failed, waiting 30s before retry..."
+            sleep 30
+          done
+          echo "All attempts failed"
+          exit 1
+        env:
+          VS_MARKETPLACE_TOKEN: ${{ secrets.VS_MARKETPLACE_TOKEN }}
 
       - name: Publish to Open VSX Registry
-        uses: HaaLeo/publish-vscode-extension@v2
-        id: publishToOpenVSX
-        with:
-          dependencies: false
-          pat: ${{ secrets.OPEN_VSX_TOKEN }}
-          extensionFile: ${{ needs.build-lint-test.outputs.vsixPath }}
-          # Retry on transient failures
-          retry: 3
-          retryWait: 30000
+        run: |
+          # Retry logic for Open VSX transient failures
+          for i in {1..3}; do
+            echo "Attempt $i/3..."
+            if npx ovsx publish ${{ needs.build-lint-test.outputs.vsixPath }} -p "${{ secrets.OPEN_VSX_TOKEN }}"; then
+              echo "Successfully published to Open VSX Registry"
+              exit 0
+            fi
+            echo "Attempt $i failed, waiting 30s before retry..."
+            sleep 30
+          done
+          echo "All attempts failed"
+          exit 1
+        env:
+          OPEN_VSX_TOKEN: ${{ secrets.OPEN_VSX_TOKEN }}
 
       - name: GitHub Release
         uses: softprops/action-gh-release@v3
