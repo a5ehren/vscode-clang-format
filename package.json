@@ -29,6 +29,8 @@
   "main": "./dist/extension.js",
   "scripts": {
     "vscode:prepublish": "vp pack",
+    "package": "vsce package --no-dependencies",
+    "publish:open-vsx": "ovsx publish --no-dependencies",
     "check": "vp check",
     "compile": "vp build",
     "test": "vp build && vp exec tsc -p . && vp exec vscode-test",
@@ -49,6 +51,7 @@
     "@vscode/test-cli": "^0.0.15",
     "@vscode/test-electron": "^3.1.0",
     "@vscode/vsce": "^3.9.2",
+    "ovsx": "^1.1.0",
     "typescript": "^5.9.3",
     "vite": "catalog:",
     "vite-plus": "catalog:"
