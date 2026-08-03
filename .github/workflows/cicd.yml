@@ -137,14 +137,9 @@ jobs:
       - name: Package Extension
         id: packageExtension
         run: |
-          pnpm run package
+          vpr package
           VSI_PATH=$(ls *.vsix | head -1)
           echo "vsixPath=$VSI_PATH" >> $GITHUB_OUTPUT
-
-      - name: Verify Artifact Checksum
-        run: |
-          echo "Verifying artifact integrity..."
-          sha256sum ${{ steps.packageExtension.outputs.vsixPath }}
 
       - name: Publish to Visual Studio Marketplace
         run: |
