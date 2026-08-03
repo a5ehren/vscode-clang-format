@@ -297,7 +297,7 @@ export class ClangDocumentFormattingEditProvider
     }
 
     // replace placeholders, if present
-    return this.doStringSubstitutions(execPath, document)
+    return this.doStringSubstitutions(execPath, document);
   }
 
   private getLanguage(document: vscode.TextDocument): string {

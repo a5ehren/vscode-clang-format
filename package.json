@@ -50,7 +50,8 @@
     "@vscode/test-electron": "^3.1.0",
     "@vscode/vsce": "^3.9.2",
     "typescript": "^5.9.3",
-    "vite-plus": "latest"
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
   },
   "resolutions": {
     "vite": "npm:@voidzero-dev/vite-plus-core@latest",
