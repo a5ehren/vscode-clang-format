@@ -169,6 +169,9 @@ jobs:
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
           extensionFile: ${{ needs.build-lint-test.outputs.vsixPath }}
           registryUrl: https://marketplace.visualstudio.com
+          # Retry on rate limits (VSID Concurrency limit)
+          retry: 3
+          retryWait: 30000
 
       - name: Publish to Open VSX Registry
         uses: HaaLeo/publish-vscode-extension@v2
@@ -177,6 +180,9 @@ jobs:
           dependencies: false
           pat: ${{ secrets.OPEN_VSX_TOKEN }}
           extensionFile: ${{ needs.build-lint-test.outputs.vsixPath }}
+          # Retry on transient failures
+          retry: 3
+          retryWait: 30000
 
       - name: GitHub Release
         uses: softprops/action-gh-release@v3
