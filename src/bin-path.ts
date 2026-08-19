@@ -4,7 +4,7 @@ import * as path from "path";
 import * as logger from "./logger";
 
 /**
- * Get the path to a binary by searching PATH and caching the result
+ * Get the path to a binary by searching PATH
  * @param binname The name of the binary to find
  * @returns The full path to the binary
  */

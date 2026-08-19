@@ -3,7 +3,7 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import * as vscode from "vscode";
-import { ClangDocumentFormattingEditProvider } from "../extension";
+import {formatDocument} from "../formatter";
 
 interface FakeInvocation {
   args: string[];
@@ -130,10 +130,9 @@ suite("Clang-Format formatter", () => {
   test("rejects when clang-format exits with a nonzero status", async () => {
     process.env.FAKE_CLANG_FORMAT_MODE = "fail";
     const document = await openCppDocument(tempDir, "int main(){return 0;}\n");
-    const provider = new ClangDocumentFormattingEditProvider();
 
     await assert.rejects(async () => {
-      await provider.formatDocument(document);
+      await formatDocument(document);
     }, /simulated clang-format failure/);
   });
 
