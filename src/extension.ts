@@ -8,22 +8,22 @@ let diagnosticCollection: vscode.DiagnosticCollection;
 export class ClangDocumentFormattingEditProvider
   implements vscode.DocumentFormattingEditProvider, vscode.DocumentRangeFormattingEditProvider
 {
-    provideDocumentFormattingEdits(
-        document: vscode.TextDocument,
-        options: vscode.FormattingOptions,
-        token: vscode.CancellationToken
-    ): Promise<vscode.TextEdit[]> {
-        return formatDocument(document);
-    }
+  provideDocumentFormattingEdits(
+    document: vscode.TextDocument,
+    options: vscode.FormattingOptions,
+    token: vscode.CancellationToken,
+  ): Promise<vscode.TextEdit[]> {
+    return formatDocument(document);
+  }
 
-    provideDocumentRangeFormattingEdits(
-        document: vscode.TextDocument,
-        range: vscode.Range,
-        options: vscode.FormattingOptions,
-        token: vscode.CancellationToken
-    ): Promise<vscode.TextEdit[]> {
-        return formatRange(document, range);
-    }
+  provideDocumentRangeFormattingEdits(
+    document: vscode.TextDocument,
+    range: vscode.Range,
+    options: vscode.FormattingOptions,
+    token: vscode.CancellationToken,
+  ): Promise<vscode.TextEdit[]> {
+    return formatRange(document, range);
+  }
 }
 
 export function activate(ctx: vscode.ExtensionContext): void {
