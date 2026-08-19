@@ -4,8 +4,8 @@ import * as path from "path";
 import { MODES } from "./clangMode";
 import { ALIAS } from "./shared/languageConfig";
 import * as sax from "sax";
-import { sync as whichSync } from "which";
-import { statSync } from "fs";
+import { getBinPath } from "./bin-path";
+import * as logger from "./logger";
 
 interface ClangFormatConfig {
   executable: string;
@@ -20,9 +20,6 @@ interface EditInfo {
   text: string;
 }
 
-// Cache binary paths for performance
-const binPathCache: Record<string, string | undefined> = {};
-export const outputChannel = vscode.window.createOutputChannel("Clang-Format");
 let diagnosticCollection: vscode.DiagnosticCollection;
 
 function getPlatformString() {
@@ -36,64 +33,6 @@ function getPlatformString() {
   }
 
   return "unknown";
-}
-
-/**
- * Get the path to a binary by searching PATH and caching the result
- * @param binname The name of the binary to find
- * @returns The full path to the binary
- */
-function getBinPath(binname: string): string {
-  // Return cached path if it exists
-  if (binPathCache[binname]) {
-    try {
-      // Verify the cached binary still exists
-      if (statSync(binPathCache[binname]).isFile()) {
-        return binPathCache[binname];
-      }
-    } catch {
-      // Cache is invalid, remove it
-      binPathCache[binname] = undefined;
-    }
-  }
-
-  try {
-    // Try to find the binary using which
-    const binPath = whichSync(binname);
-
-    // Validate the path and handle spaces properly
-    if (binPath?.trim()) {
-      // Normalize the path to handle platform-specific separators
-      const normalizedPath = path.normalize(binPath.trim());
-
-      // Verify the path exists and is accessible
-      try {
-        const stats = statSync(normalizedPath);
-        if (stats.isFile()) {
-          binPathCache[binname] = normalizedPath;
-          return normalizedPath;
-        }
-      } catch (statError: unknown) {
-        // Path exists but stat failed, log warning but continue
-        const statErrorMessage = statError instanceof Error ? statError.message : String(statError);
-        outputChannel.appendLine(
-          `Warning: Could not stat binary at ${normalizedPath}: ${statErrorMessage}`,
-        );
-        binPathCache[binname] = normalizedPath;
-        return normalizedPath;
-      }
-    }
-
-    // If we get here, something went wrong with the path
-    throw new Error(`Invalid binary path returned by which: ${binPath}`);
-  } catch (error) {
-    // If which fails, return the binary name as-is
-    // This maintains compatibility with the old behavior
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    outputChannel.appendLine(`Could not find binary '${binname}' in PATH: ${errorMessage}`);
-    binPathCache[binname] = binname;
-    return binname;
-  }
 }
 
 export class ClangDocumentFormattingEditProvider
@@ -176,7 +115,7 @@ export class ClangDocumentFormattingEditProvider
       };
 
       const handleError = (error: Error): void => {
-        outputChannel.appendLine(`XML parsing error: ${error.message}`);
+        logger.log(`XML parsing error: ${error.message}`);
         reject(error);
       };
 
@@ -268,7 +207,7 @@ export class ClangDocumentFormattingEditProvider
       .replace(/\${cwd}/g, process.cwd())
       .replace(/\${env[.:]([^}]+)}/g, (sub: string, envName: string) => {
         if (!/^[a-z_]\w*$/i.test(envName)) {
-          outputChannel.appendLine(`Warning: Invalid environment variable name: ${envName}`);
+          logger.log(`Warning: Invalid environment variable name: ${envName}`);
           return "";
         }
         return process.env[envName] ?? "";
@@ -296,7 +235,7 @@ export class ClangDocumentFormattingEditProvider
   private getLanguage(document: vscode.TextDocument): string {
     const langId = document.languageId;
     const mappedLang = (ALIAS as Record<string, string>)[langId] || langId;
-    outputChannel.appendLine(`Document language ID: ${langId}, mapped to: ${mappedLang}`);
+    logger.log(`Document language ID: ${langId}, mapped to: ${mappedLang}`);
     return mappedLang;
   }
 
@@ -397,16 +336,14 @@ export class ClangDocumentFormattingEditProvider
       !normalizedStyle.startsWith("{") &&
       !normalizedStyle.endsWith("}")
     ) {
-      outputChannel.appendLine(`Warning: Invalid style value "${style}", falling back to "file"`);
+      logger.log(`Warning: Invalid style value "${style}", falling back to "file"`);
       style = "file";
     }
 
     // Validate fallback style - only allow known values
     const validFallbackStyles = ["none", ...validStyles];
     if (!validFallbackStyles.includes(fallbackStyle.toLowerCase())) {
-      outputChannel.appendLine(
-        `Warning: Invalid fallback style "${fallbackStyle}", falling back to "none"`,
-      );
+      logger.log(`Warning: Invalid fallback style "${fallbackStyle}", falling back to "none"`);
       fallbackStyle = "none";
     }
 
@@ -456,7 +393,7 @@ export class ClangDocumentFormattingEditProvider
       const timeoutId = setTimeout(() => {
         cleanup();
         const timeoutError = new Error("Format operation timed out after 10 seconds");
-        outputChannel.appendLine(`Formatting timed out after 10s for file: ${document.fileName}`);
+        logger.log(`Formatting timed out after 10s for file: ${document.fileName}`);
         reject(timeoutError);
       }, 10000);
 
@@ -509,7 +446,7 @@ export class ClangDocumentFormattingEditProvider
 
         child.on("error", (err: Error) => {
           cleanup();
-          outputChannel.appendLine(`Error spawning clang-format: ${err.message}`);
+          logger.log(`Error spawning clang-format: ${err.message}`);
           reject(err);
         });
 
@@ -517,8 +454,8 @@ export class ClangDocumentFormattingEditProvider
           cleanup();
 
           if (code !== 0) {
-            outputChannel.appendLine(`clang-format exited with code ${String(code)}`);
-            outputChannel.appendLine(`stderr: ${stderr}`);
+            logger.log(`clang-format exited with code ${String(code)}`);
+            logger.log(`stderr: ${stderr}`);
             reject(new Error(`clang-format exited with code ${String(code)}: ${stderr}`));
             return;
           }
@@ -532,7 +469,7 @@ export class ClangDocumentFormattingEditProvider
           this.getEdits(document, stdout, codeContent)
             .then(resolve)
             .catch((error: Error) => {
-              outputChannel.appendLine(`Error getting edits: ${error.message}`);
+              logger.log(`Error getting edits: ${error.message}`);
               reject(error);
             });
         });
@@ -546,13 +483,13 @@ export class ClangDocumentFormattingEditProvider
         // Handle cancellation
         token.onCancellationRequested(() => {
           cleanup();
-          outputChannel.appendLine(`Formatting cancelled for file: ${document.fileName}`);
+          logger.log(`Formatting cancelled for file: ${document.fileName}`);
           reject(new Error("Format cancelled"));
         });
       } catch (err: unknown) {
         cleanup();
         const errorMessage = err instanceof Error ? err.message : "unknown error";
-        outputChannel.appendLine(`Error during formatting: ${errorMessage}`);
+        logger.log(`Error during formatting: ${errorMessage}`);
         reject(new Error(`Error during formatting: ${errorMessage}`, { cause: err }));
       }
     });
@@ -572,7 +509,7 @@ export function activate(ctx: vscode.ExtensionContext): void {
   // Initialize diagnostic collection
   diagnosticCollection = vscode.languages.createDiagnosticCollection("clang-format");
   ctx.subscriptions.push(diagnosticCollection);
-  ctx.subscriptions.push(outputChannel);
+  ctx.subscriptions.push(logger.outputChannel);
 
   const formatter = new ClangDocumentFormattingEditProvider();
   const availableLanguages = new Set<string>();
@@ -585,14 +522,5 @@ export function activate(ctx: vscode.ExtensionContext): void {
       );
       availableLanguages.add(mode.language);
     }
-  }
-}
-
-export function deactivate(): void {
-  if (diagnosticCollection) {
-    diagnosticCollection.dispose();
-  }
-  if (outputChannel) {
-    outputChannel.dispose();
   }
 }
