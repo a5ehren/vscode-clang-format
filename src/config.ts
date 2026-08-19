@@ -15,43 +15,19 @@ export const defaultConfigure: ClangFormatConfig = {
   assumeFilename: "",
 };
 
-export function getStyle(document: vscode.TextDocument) {
-  const language = helpers.getLanguage(document);
+function getConfigValue<T>(key: string, defaultValue: T, document: vscode.TextDocument): T {
   const config = vscode.workspace.getConfiguration("clang-format", document.uri);
+  const language = helpers.getLanguage(document);
 
-  // Get language-specific style with document URI
-  const languageStyleKey = `language.${language}.style`;
-
-  let ret = config.get<string>(languageStyleKey) ?? "";
-
-  ret = helpers.doStringSubstitutions(ret, document);
-
-  if (ret.trim()) {
-    return ret;
-  }
-
-  // Fallback to global style
-  ret = config.get<string>("style") ?? "";
-  ret = helpers.doStringSubstitutions(ret, document);
-
-  const finalStyle = ret.trim() ? ret : defaultConfigure.style;
-  return finalStyle;
+  // Try language-specific first, then global, then default
+  return config.get<T>(`language.${language}.${key}`) ?? config.get<T>(key) ?? defaultValue;
 }
 
-export function getFallbackStyle(document: vscode.TextDocument) {
-  // Get language-specific fallback style with document URI
-  const config = vscode.workspace.getConfiguration("clang-format", document.uri);
-  let strConf = config.get<string>(`language.${helpers.getLanguage(document)}.fallbackStyle`);
-  if (strConf?.trim()) {
-    return strConf;
-  }
+export function getStyle(document: vscode.TextDocument): string {
+  const style = getConfigValue("style", defaultConfigure.style, document);
+  return helpers.doStringSubstitutions(style, document);
+}
 
-  // Try global fallback style
-  strConf = config.get<string>("fallbackStyle");
-  if (strConf?.trim()) {
-    return strConf;
-  }
-
-  // If no fallback style is configured, use default
-  return defaultConfigure.fallbackStyle;
+export function getFallbackStyle(document: vscode.TextDocument): string {
+  return getConfigValue("fallbackStyle", defaultConfigure.fallbackStyle, document);
 }

@@ -4,6 +4,7 @@ import * as os from "node:os";
 import * as path from "node:path";
 import * as vscode from "vscode";
 import { formatDocument } from "../formatter";
+import { defaultConfigure } from "../config";
 
 interface FakeInvocation {
   args: string[];
@@ -80,7 +81,7 @@ suite("Clang-Format formatter", () => {
     assert.deepStrictEqual(invocation.args.slice(0, 3), [
       "-output-replacements-xml",
       "-style=file",
-      "-fallback-style=LLVM",
+      `-fallback-style=${defaultConfigure.fallbackStyle}`,
     ]);
   });
 
