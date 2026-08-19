@@ -249,15 +249,8 @@ export class ClangDocumentFormattingEditProvider
         resolve(edits);
       };
 
-      // Process content in chunks to avoid memory issues
-      const CHUNK_SIZE = 1024 * 1024; // 1MB chunks
-
       try {
-        // Split XML into chunks and process
-        for (let i = 0; i < xml.length; i += CHUNK_SIZE) {
-          const chunk = xml.slice(i, i + CHUNK_SIZE);
-          parser.write(chunk);
-        }
+        parser.write(xml);
         parser.end();
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : "unknown error";
