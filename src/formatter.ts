@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { getBinPath } from "./bin-path";
 import * as logger from "./logger";
 import * as cp from "child_process";
 import * as path from "path";
@@ -135,7 +134,7 @@ function doFormatDocument(
     };
 
     try {
-      formatCommandBinPath = getBinPath(getExecutablePath(document));
+      formatCommandBinPath = helpers.getBinPath(getExecutablePath(document));
       const codeContent = document.getText();
 
       const formatArgs = getFormatArgs(document, range);
