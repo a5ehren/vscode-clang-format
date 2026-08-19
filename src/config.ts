@@ -8,7 +8,7 @@ interface ClangFormatConfig {
   assumeFilename: string;
 }
 
-export const defaultConfigure: ClangFormatConfig = {
+export const defaultConfig: ClangFormatConfig = {
   executable: "clang-format",
   style: "file",
   fallbackStyle: "none",
@@ -24,10 +24,10 @@ function getConfigValue<T>(key: string, defaultValue: T, document: vscode.TextDo
 }
 
 export function getStyle(document: vscode.TextDocument): string {
-  const style = getConfigValue("style", defaultConfigure.style, document);
+  const style = getConfigValue("style", defaultConfig.style, document);
   return helpers.doStringSubstitutions(style, document);
 }
 
 export function getFallbackStyle(document: vscode.TextDocument): string {
-  return getConfigValue("fallbackStyle", defaultConfigure.fallbackStyle, document);
+  return getConfigValue("fallbackStyle", defaultConfig.fallbackStyle, document);
 }
