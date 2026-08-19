@@ -27,9 +27,6 @@ export class ClangDocumentFormattingEditProvider
 }
 
 export function activate(ctx: vscode.ExtensionContext): void {
-  // Initialize diagnostic collection
-  diagnosticCollection = vscode.languages.createDiagnosticCollection("clang-format");
-  ctx.subscriptions.push(diagnosticCollection);
   ctx.subscriptions.push(logger.outputChannel);
 
   const formatter = new ClangDocumentFormattingEditProvider();
