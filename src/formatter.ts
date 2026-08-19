@@ -4,7 +4,7 @@ import * as logger from "./logger";
 import * as cp from "child_process";
 import * as path from "path";
 import * as helpers from "./helpers";
-import * as config from "./config";
+import * as clangConfig from "./config";
 import * as parser from "./parser";
 
 function getAssumedFilename(document: vscode.TextDocument) {
@@ -25,8 +25,8 @@ function getAssumedFilename(document: vscode.TextDocument) {
 
 function getFormatArgs(document: vscode.TextDocument, range: vscode.Range | undefined): string[] {
   // Validate and sanitize style parameters
-  let style = config.getStyle(document);
-  let fallbackStyle = config.getFallbackStyle(document);
+  let style = clangConfig.getStyle(document);
+  let fallbackStyle = clangConfig.getFallbackStyle(document);
   const assumedFilename = getAssumedFilename(document);
 
   // Validate style parameter - only allow known values or file paths
@@ -103,7 +103,7 @@ function getExecutablePath(document?: vscode.TextDocument) {
   const execPath = platformExecPath ?? defaultExecPath;
 
   if (!execPath) {
-    return config.defaultConfigure.executable;
+    return clangConfig.defaultConfig.executable;
   }
 
   // replace placeholders, if present
