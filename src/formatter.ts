@@ -113,7 +113,6 @@ function getExecutablePath(document?: vscode.TextDocument) {
 function doFormatDocument(
   document: vscode.TextDocument,
   range: vscode.Range,
-  options: vscode.FormattingOptions | null,
   token: vscode.CancellationToken,
 ): Promise<vscode.TextEdit[]> {
   return new Promise<vscode.TextEdit[]>((resolve, reject) => {
@@ -195,7 +194,8 @@ function doFormatDocument(
           return;
         }
 
-        parser.getEdits(document, stdout, codeContent)
+        parser
+          .getEdits(document, stdout, codeContent)
           .then(resolve)
           .catch((error: Error) => {
             logger.log(`Error getting edits: ${error.message}`);
@@ -230,13 +230,13 @@ export function formatDocument(document: vscode.TextDocument): Promise<vscode.Te
     document.positionAt(document.getText().length),
   );
   const token = new vscode.CancellationTokenSource().token;
-  return doFormatDocument(document, fullRange, null, token);
+  return doFormatDocument(document, fullRange, token);
 }
 
 export function formatRange(
-    document: vscode.TextDocument,
-    range: vscode.Range
+  document: vscode.TextDocument,
+  range: vscode.Range,
 ): Promise<vscode.TextEdit[]> {
-    const token = new vscode.CancellationTokenSource().token;
-    return doFormatDocument(document, range, null, token);
+  const token = new vscode.CancellationTokenSource().token;
+  return doFormatDocument(document, range, token);
 }
